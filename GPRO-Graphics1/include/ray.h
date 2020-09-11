@@ -1,8 +1,22 @@
 #ifndef RAY_H
 #define RAY_H
+/*
+    include-ray.h
+    ray class for more complex vector math.
 
+    Modified by: Nico Omenetto
+    Modified because: to functionalize the ray class into the program
+*/
+/*
+Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Accessed 9 09. 2020.
+
+*/
 #include "gpro/gpro-math/gproVector.h"
+#include "gpro/vec3.h"
 
+//Intent: creation of the ray class
+//reason: to initialize the class to incorporate into the program.
 class ray {
 public:
     ray() {}
@@ -14,8 +28,7 @@ public:
     vec3 direction() const { return dir; }
 
     vec3 at(double t) const {
-        vec3 dummy(orig.x + t * dir.x, orig.y + t * dir.y, orig.z + t * dir.z);
-        return dummy;
+        return orig + t * dir;
     }
 
 public:

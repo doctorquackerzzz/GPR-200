@@ -18,30 +18,37 @@
 	GPRO-Graphics1-TestConsole-main.c/.cpp
 	Main entry point source file for a Windows console application.
 
-	Modified by: ____________
-	Modified because: ____________
+	Modified by: Nico Omenetto
+	Modified because: The starting point for the assignment as well as the creation of the ppm file within the main function
 */
+/*
+Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Accessed 9 09. 2020.
 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
 
+#include "gpro/gpro-math/gproVector.h"
 #include "gpro/rtweekend.h"
+#include "gpro/hittable_list.h"
 #include "gpro/color.h"
 #include "gpro/sphere.h"
 
 double hit_sphere(const vec3& center, double radius, const ray& r) {
 	vec3 oc = r.origin() - center;
-	vec3 a = a = r.direction().length_squared();
-	vec3 half_b = dot(oc, r.direction());
-	vec3 c = oc.length_squared() - radius * radius;
-	int discriminant = b * b - 4 * a * c;
+	double a = r.direction().length_squared();
+	double half_b = dot(oc, r.direction());
+	double c = oc.length_squared() - radius * radius;
+	int discriminant = half_b * half_b - 4 * a * c;
 	if (discriminant < 0) {
 		return -1.0;
 	}
 	else {
-		return (-b - sqrt(discriminant)) / (2.0 * a);
+		return (-half_b - sqrt(discriminant)) / (2.0 * a);
 	}
 }
 
@@ -51,7 +58,7 @@ vec3 ray_color(const ray& r, const hittable& world) {
 		return 0.5 * (rec.normal + vec3(1, 1, 1));
 	}
 	vec3 unit_direction = unit_vector(r.direction());
-	t = 0.5 * (unit_direction.y() + 1.0);
+	double t = 0.5 * (unit_direction.y() + 1.0);
 	return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
 }
 
@@ -83,6 +90,11 @@ void testVector()
 
 int main(int const argc, char const* const argv[])
 {
+	testVector();
+	#ifdef __cplusplus
+	std::ofstream ppm("image.ppm"); //file open
+	#endif __cplusplus
+
 	// Image
 	const double aspect_ratio = 16.0 / 9.0;
 	const int image_width = 400;
@@ -114,12 +126,12 @@ int main(int const argc, char const* const argv[])
 			double v = double(j) / (image_height - 1);
 			ray r(origin, lower_left_corner + u * horizontal + v * vertical - origin);
 			vec3 pixel_color = ray_color(r, world);
-			write_color(std::cout, pixel_color);
+			write_color(ppm, pixel_color);
 
 		}
 	}
 	std::cerr << "\nDone.\n";
-	testVector();
+	
 	
 	printf("\n\n");
 	system("pause");
