@@ -3,6 +3,7 @@
 
 #include "ray.h"
 #include "gpro-math/gproVector.h"
+#include "vec3.h"
 /*
     include-color.h
     color.h initialization and the writecolor function

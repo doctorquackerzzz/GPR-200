@@ -2,12 +2,13 @@
 #define HITTABLE_H
 
 #include "ray.h"
+
 /*
     include-hittable.h
-    color.h initialization and the writecolor function
+    hittable.h initialization and hit record + hittable creation
 
     Modified by: Nico Omenetto
-    Modified because: to manipulate the program as to allow the writing of color to the ppm file
+    Modified because: to create the struct for the total hit record of the sphere and to create a class that will allow a function of whether or not the sphere was hit
 */
 /*
 Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
