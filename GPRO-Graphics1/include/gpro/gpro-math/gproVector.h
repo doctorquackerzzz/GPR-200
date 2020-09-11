@@ -25,7 +25,7 @@
 #ifndef _GPRO_VECTOR_H_
 #define _GPRO_VECTOR_H_
 
-
+#include <cmath>
 #ifdef __cplusplus
 // DB: link C++ symbols as if they are C where possible
 extern "C" {

@@ -27,9 +27,33 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include "gpro/rtweekend.h"
+#include "gpro/color.h"
+#include "gpro/sphere.h"
 
-#include "gpro/gpro-math/gproVector.h"
+double hit_sphere(const vec3& center, double radius, const ray& r) {
+	vec3 oc = r.origin() - center;
+	vec3 a = a = r.direction().length_squared();
+	vec3 half_b = dot(oc, r.direction());
+	vec3 c = oc.length_squared() - radius * radius;
+	int discriminant = b * b - 4 * a * c;
+	if (discriminant < 0) {
+		return -1.0;
+	}
+	else {
+		return (-b - sqrt(discriminant)) / (2.0 * a);
+	}
+}
 
+vec3 ray_color(const ray& r, const hittable& world) {
+	hit_record rec;
+	if (world.hit(r, 0, infinity, rec)) {
+		return 0.5 * (rec.normal + vec3(1, 1, 1));
+	}
+	vec3 unit_direction = unit_vector(r.direction());
+	t = 0.5 * (unit_direction.y() + 1.0);
+	return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
+}
 
 void testVector()
 {
@@ -54,14 +78,31 @@ void testVector()
 }
 
 
+
+
+
 int main(int const argc, char const* const argv[])
 {
-	testVector();
 	// Image
+	const double aspect_ratio = 16.0 / 9.0;
+	const int image_width = 400;
+	const int image_height = static_cast<int>(image_width / aspect_ratio);
 
-	const int image_width = 256;
-	const int image_height = 256;
+	// World
+	hittable_list world;
+	world.add(make_shared<sphere>(vec3(0, 0, -1), 0.5));
+	world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100));
 
+	// Camera
+
+	double viewport_height = 2.0;
+	double viewport_width = aspect_ratio * viewport_height;
+	double focal_length = 1.0;
+
+	vec3 origin = vec3(0, 0, 0);
+	vec3 horizontal = vec3(viewport_width, 0, 0);
+	vec3 vertical = vec3(0, viewport_height, 0);
+	vec3 lower_left_corner = origin - horizontal / 2 - vertical / 2 - vec3(0, 0, focal_length);
 	// Render
 
 	std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
@@ -69,19 +110,18 @@ int main(int const argc, char const* const argv[])
 	for (int j = image_height - 1; j >= 0; --j) {
 		std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
 		for (int i = 0; i < image_width; ++i) {
-			auto r = double(i) / (image_width - 1);
-			auto g = double(j) / (image_height - 1);
-			auto b = 0.25;
+			double u = double(i) / (image_width - 1);
+			double v = double(j) / (image_height - 1);
+			ray r(origin, lower_left_corner + u * horizontal + v * vertical - origin);
+			vec3 pixel_color = ray_color(r, world);
+			write_color(std::cout, pixel_color);
 
-			int ir = static_cast<int>(255.999 * r);
-			int ig = static_cast<int>(255.999 * g);
-			int ib = static_cast<int>(255.999 * b);
-
-			std::cout << ir << ' ' << ig << ' ' << ib << '\n';
 		}
 	}
-
 	std::cerr << "\nDone.\n";
+	testVector();
+	
 	printf("\n\n");
 	system("pause");
+	
 }
