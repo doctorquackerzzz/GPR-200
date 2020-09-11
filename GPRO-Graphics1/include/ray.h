@@ -14,7 +14,7 @@ Accessed 9 09. 2020.
 */
 #include "gpro/gpro-math/gproVector.h"
 #include "gpro/vec3.h"
-#include "vec3.h"
+#include "vec3.h" 
 
 //Intent: creation of the ray class
 //reason: to initialize the class to incorporate into the program.
