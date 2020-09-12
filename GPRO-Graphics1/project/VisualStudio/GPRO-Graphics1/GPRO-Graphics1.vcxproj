@@ -164,7 +164,6 @@
     <ClInclude Include="..\..\..\include\gpro\hittable_list.h" />
     <ClInclude Include="..\..\..\include\gpro\rtweekend.h" />
     <ClInclude Include="..\..\..\include\gpro\sphere.h" />
-    <ClInclude Include="..\..\..\include\gpro\vec3.h" />
     <ClInclude Include="..\..\..\include\ray.h" />
   </ItemGroup>
   <ItemGroup>

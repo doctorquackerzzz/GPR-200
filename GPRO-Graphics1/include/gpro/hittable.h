@@ -16,14 +16,22 @@ Accessed 9 09. 2020.
 
 */
 struct hit_record {
-    vec3 p;
+    point3 p;
     vec3 normal;
-    double t;
-    bool front_face;
+    float t;
+    bool front_face = false;
 
     inline void set_face_normal(const ray& r, const vec3& outward_normal) {
         front_face = dot(r.direction(), outward_normal) < 0;
-        normal = front_face ? outward_normal : -outward_normal;
+        if (front_face)
+        {
+            normal = outward_normal;
+        }
+        else
+        {
+            vec3 init(0.0f, 0.0f, 0.0f);
+            normal = init - outward_normal;
+        }
     }
 };
 

@@ -14,7 +14,7 @@ Accessed 9 09. 2020.
 */
 #include "hittable.h"
 #include "gpro/gpro-math/gproVector.h"
-#include "gpro/vec3.h"
+
 
 //Intent: creation of the sphere class
 //Reason: to create a sphere class to display in the ppm file
