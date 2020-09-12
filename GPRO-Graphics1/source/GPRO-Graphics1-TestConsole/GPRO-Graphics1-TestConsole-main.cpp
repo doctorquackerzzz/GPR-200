@@ -29,8 +29,7 @@ Accessed 9 09. 2020.
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
-#include <fstream>
+
 
 #include "gpro/gpro-math/gproVector.h"
 #include "gpro/rtweekend.h"
@@ -38,12 +37,12 @@ Accessed 9 09. 2020.
 #include "gpro/color.h"
 #include "gpro/sphere.h"
 
-double hit_sphere(const vec3& center, double radius, const ray& r) {
+double hit_sphere(const vec3& center, float radius, const ray& r) {
 	vec3 oc = r.origin() - center;
-	double a = r.direction().length_squared();
-	double half_b = dot(oc, r.direction());
-	double c = oc.length_squared() - radius * radius;
-	int discriminant = half_b * half_b - 4 * a * c;
+	float a = r.direction().length_squared();
+	float half_b = dot(oc, r.direction());
+	float c = oc.length_squared() - radius * radius;
+	float discriminant = half_b * half_b - 4 * a * c;
 	if (discriminant < 0) {
 		return -1.0;
 	}
@@ -55,11 +54,11 @@ double hit_sphere(const vec3& center, double radius, const ray& r) {
 vec3 ray_color(const ray& r, const hittable& world) {
 	hit_record rec;
 	if (world.hit(r, 0, infinity, rec)) {
-		return 0.5 * (rec.normal + vec3(1, 1, 1));
+		return (rec.normal + color(1, 1, 1)) * 0.5f;
 	}
 	vec3 unit_direction = unit_vector(r.direction());
-	double t = 0.5 * (unit_direction.y() + 1.0);
-	return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
+	float t = (unit_direction.y + 1.0f) * 0.5f;
+	return (color(1.0f, 1.0f, 1.0f) * (1.0f - t) + (color(0.5f, 0.7f, 1.0f) * t));
 }
 
 void testVector()
@@ -91,12 +90,10 @@ void testVector()
 int main(int const argc, char const* const argv[])
 {
 	testVector();
-	#ifdef __cplusplus
-	std::ofstream ppm("image.ppm"); //file open
-	#endif __cplusplus
+	
 
 	// Image
-	const double aspect_ratio = 16.0 / 9.0;
+	const float aspect_ratio = 16.0f / 9.0f;
 	const int image_width = 400;
 	const int image_height = static_cast<int>(image_width / aspect_ratio);
 
@@ -107,9 +104,9 @@ int main(int const argc, char const* const argv[])
 
 	// Camera
 
-	double viewport_height = 2.0;
-	double viewport_width = aspect_ratio * viewport_height;
-	double focal_length = 1.0;
+	float viewport_height = 2.0;
+	float viewport_width = aspect_ratio * viewport_height;
+	float focal_length = 1.0;
 
 	vec3 origin = vec3(0, 0, 0);
 	vec3 horizontal = vec3(viewport_width, 0, 0);
@@ -122,11 +119,11 @@ int main(int const argc, char const* const argv[])
 	for (int j = image_height - 1; j >= 0; --j) {
 		std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
 		for (int i = 0; i < image_width; ++i) {
-			double u = double(i) / (image_width - 1);
-			double v = double(j) / (image_height - 1);
-			ray r(origin, lower_left_corner + u * horizontal + v * vertical - origin);
+			float u = float(i) / (image_width - 1);
+			float v = float(j) / (image_height - 1);
+			ray r(origin, lower_left_corner + (horizontal * u) + (vertical * v));
 			vec3 pixel_color = ray_color(r, world);
-			write_color(ppm, pixel_color);
+			write_color(std::cout, pixel_color);
 
 		}
 	}

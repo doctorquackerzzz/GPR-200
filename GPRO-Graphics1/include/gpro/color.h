@@ -21,9 +21,9 @@ Accessed 9 09. 2020.
 //Reason: The function can be able to write out what it needs to for color
 void write_color(std::ostream& out, vec3 pixel_color) {
     // Write the translated [0,255] value of each color component.
-    out << static_cast<int>(255.999 * pixel_color.x()) << ' ' //R
-        << static_cast<int>(255.999 * pixel_color.y()) << ' ' //B
-        << static_cast<int>(255.999 * pixel_color.z()) << '\n'; //G
+    out << static_cast<int>(255.999 * pixel_color.x) << ' ' //R
+        << static_cast<int>(255.999 * pixel_color.y) << ' ' //B
+        << static_cast<int>(255.999 * pixel_color.z) << '\n'; //G
 }
 
 

@@ -165,6 +165,7 @@
     <ClInclude Include="..\..\..\include\gpro\rtweekend.h" />
     <ClInclude Include="..\..\..\include\gpro\sphere.h" />
     <ClInclude Include="..\..\..\include\ray.h" />
+    <ClInclude Include="..\..\..\include\vec3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\include\gpro\gpro-math\_inl\gproVector.inl" />

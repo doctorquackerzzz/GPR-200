@@ -21,29 +21,27 @@ Accessed 9 09. 2020.
 class sphere : public hittable {
 public:
     sphere() {}
-    sphere(vec3 cen, double r) : center(cen), radius(r) {};
-
+    sphere(point3 cen, float r) : center(cen), radius(r) {};
     virtual bool hit(
-        const ray& r, double tmin, double tmax, hit_record& rec) const override;
+        const ray& r, float tmin, float tmax, hit_record& rec) const override;
 
-public:
-    vec3 center;
-    double radius;
+    point3 center;
+    float radius;
 };
 
 //intent: to determine whether or not the sphere has been hit
 //reason: to provide a sense as to what the equations are to calculate whther the sphere was hit
-bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
+bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
     vec3 oc = r.origin() - center;
-    double a = r.direction().length_squared();
-    double half_b = dot(oc, r.direction());
-    double c = oc.length_squared() - radius * radius;
-    double discriminant = half_b * half_b - a * c;
+    float a = r.direction().length_squared();
+    float half_b = dot(oc, r.direction());
+    float c = oc.length_squared() - radius * radius;
+    float discriminant = half_b * half_b - a * c;
 
     if (discriminant > 0) {
-        double root = sqrt(discriminant);
+        float root = sqrt(discriminant);
 
-        double temp = (-half_b - root) / a;
+        float temp = (-half_b - root) / a;
         if (temp < t_max && temp > t_min) {
             rec.t = temp;
             rec.p = r.at(rec.t);

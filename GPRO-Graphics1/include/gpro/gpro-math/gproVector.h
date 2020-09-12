@@ -21,6 +21,11 @@
 	Modified by: ____________
 	Modified because: ____________
 */
+/*
+Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Accessed 9 09. 2020.
+
+*/
 
 #ifndef _GPRO_VECTOR_H_
 #define _GPRO_VECTOR_H_
@@ -70,15 +75,23 @@ union vec3
 	explicit vec3(float3 const vc);	// copy ctor w generic array of floats
 	vec3(vec3 const& rh);	// copy ctor
 
+	float length() const;
+	float length_squared() const;
+
 	vec3& operator =(vec3 const& rh);	// assignment operator (copy other to this)
 
 	vec3& operator +=(vec3 const& rh);	// addition assignment operator (add other to this)
-
+	vec3& operator *=(const float rh);	// multiplication operator (multiply this by other)
+	vec3 const operator *(float rh) const;
+	
 	vec3 const operator +(vec3 const& rh) const;	// addition operator (get sum of this and another)
-
+	vec3 const operator /(float rh) const;
+	vec3 const operator -(vec3 const& rh) const;
 #endif	// __cplusplus
 };
-
+// Type aliases for vec3
+using point3 = vec3;   // 3D point
+using color = vec3;    // RGB color
 
 // DB: declare C functions (all equivalents of above C++ functions are here)
 //	-> return pointers so you can chain operations (they just take pointers)
@@ -95,6 +108,9 @@ floatv vec3sum(float3 v_sum, float3 const v_lh, float3 const v_rh);	// get sum o
 #ifdef __cplusplus
 // DB: end C linkage for C++ symbols
 }
+float dot(const vec3& u, const vec3& v);
+vec3 unit_vector(vec3 const& rh);
+
 #endif	// __cplusplus
 
 

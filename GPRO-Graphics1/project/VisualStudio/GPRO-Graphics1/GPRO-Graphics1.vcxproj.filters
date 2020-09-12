@@ -50,6 +50,9 @@
     <ClInclude Include="..\..\..\include\gpro\hittable_list.h">
       <Filter>Header Files\gpro\gpro-math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\vec3.h">
+      <Filter>Header Files\gpro\gpro-math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\include\gpro\gpro-math\_inl\gproVector.inl">
