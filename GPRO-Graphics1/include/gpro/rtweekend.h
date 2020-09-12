@@ -13,7 +13,10 @@
     Modified because: to create shortcuts for stds and common headers within the main cpp file
 */
 /*
+Contains Code from the following source:
+
 Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Peter Shirley
 Accessed 9 09. 2020.
 
 */
@@ -22,22 +25,21 @@ Accessed 9 09. 2020.
 
 using std::shared_ptr;
 using std::make_shared;
-using std::sqrt;
+using std::sqrt; //squareroot std
 
 // Constants
 
-const double infinity = std::numeric_limits<double>::infinity();
-const double pi = 3.1415926535897932385;
+const double infinity = std::numeric_limits<double>::infinity(); //infinity
+const double pi = 3.1415926535897932385; //pi
 
 // Utility Functions
 
 inline double degrees_to_radians(double degrees) {
-    return degrees * pi / 180.0;
+    return degrees * pi / 180.0; //degrees to radians conversion
 }
 
 // Common Headers
 
 #include "ray.h"
 #include "gpro/gpro-math/gproVector.h"
-#include "vec3.h"
 #endif

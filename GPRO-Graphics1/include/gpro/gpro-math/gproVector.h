@@ -22,7 +22,10 @@
 	Modified because: to apply what Peter Shirley wrote in vec3.h and manipulate it to the gproVector.h given by Prof. Buckstein
 */
 /*
+Contains Code from the following source:
+
 Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Peter Shirley
 Accessed 9 09. 2020.
 
 */
@@ -82,11 +85,11 @@ union vec3
 
 	vec3& operator +=(vec3 const& rh);	// addition assignment operator (add other to this)
 	vec3& operator *=(const float rh);	// multiplication operator (multiply this by other)
-	vec3 const operator *(float rh) const;
+	vec3 const operator *(float rh) const; 
 	
 	vec3 const operator +(vec3 const& rh) const;	// addition operator (get sum of this and another)
 	vec3 const operator /(float rh) const;
-	vec3 const operator -(vec3 const& rh) const;
+	vec3 const operator -(vec3 const& rh) const;// subtraction operator (get difference of this and another)
 #endif	// __cplusplus
 };
 // Type aliases for vec3
@@ -107,10 +110,11 @@ floatv vec3sum(float3 v_sum, float3 const v_lh, float3 const v_rh);	// get sum o
 
 #ifdef __cplusplus
 // DB: end C linkage for C++ symbols
+
 }
+
 float dot(const vec3& u, const vec3& v);
 vec3 unit_vector(vec3 const& rh);
-
 #endif	// __cplusplus
 
 

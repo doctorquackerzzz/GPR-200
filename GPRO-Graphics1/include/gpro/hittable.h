@@ -8,13 +8,18 @@
     hittable.h initialization and hit record + hittable creation
 
     Modified by: Nico Omenetto
-    Modified because: to create the struct for the total hit record of the sphere and to create a class that will allow a function of whether or not the sphere was hit
+    Modified because: to create the struct for the curent hit on the sphere and to create a class that will allow a function of whether or not the sphere was hit
 */
 /*
+Contains Code from the following source:
+
 Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Peter Shirley
 Accessed 9 09. 2020.
 
 */
+//Intent: to keep record of the current hit on the sphere, and create the hittable class
+//Reason: to keep track of the hit, and record it on the list of hits on the sphere
 struct hit_record {
     point3 p;
     vec3 normal;

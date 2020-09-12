@@ -8,7 +8,10 @@
     Modified because: to manipulate and to functionalize the sphere.h file into the program
 */
 /*
+Contains Code from the following source:
+
 Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Peter Shirley
 Accessed 9 09. 2020.
 
 */

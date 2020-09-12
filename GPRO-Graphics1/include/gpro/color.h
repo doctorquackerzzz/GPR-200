@@ -11,7 +11,10 @@
     Modified because: to manipulate the program as to allow the writing of color to the ppm file
 */
 /*
+Contains Code from the following source:
+
 Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Peter Shirley
 Accessed 9 09. 2020.
 
 */

@@ -22,7 +22,10 @@
 	Modified because: The starting point for the assignment as well as the creation of the ppm file within the main function
 */
 /*
+Contains Code from the following source:
+
 Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Peter Shirley
 Accessed 9 09. 2020.
 
 */
@@ -37,6 +40,9 @@ Accessed 9 09. 2020.
 #include "gpro/color.h"
 #include "gpro/sphere.h"
 
+
+//Intent: to calculato whether the sphere has been hit
+//Reason: for if the sphere is hit, it will calculate where it can be
 double hit_sphere(const vec3& center, float radius, const ray& r) {
 	vec3 oc = r.origin() - center;
 	float a = r.direction().length_squared();
@@ -51,6 +57,8 @@ double hit_sphere(const vec3& center, float radius, const ray& r) {
 	}
 }
 
+//Intent: To create the ray color
+//Reason: as hit, it will determine what specific color got hit and make the ray that color
 vec3 ray_color(const ray& r, const hittable& world) {
 	hit_record rec;
 	if (world.hit(r, 0, infinity, rec)) {
