@@ -26,11 +26,13 @@ struct hit_record {
     float t;
     bool front_face;
 
+    //normal face creation
     inline void set_face_normal(const ray& r, const vec3& outward_normal) {
         front_face = dot(r.direction(), outward_normal) < 0;
     }
 };
 
+//hittable class creation with bool hit function
 class hittable {
 public:
     virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const = 0;

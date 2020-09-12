@@ -54,6 +54,7 @@ inline vec3::vec3(vec3 const& rh)
 {
 }
 
+//equality operator overload
 inline vec3& vec3::operator =(vec3 const& rh)
 {
 	x = rh.x;
@@ -61,7 +62,7 @@ inline vec3& vec3::operator =(vec3 const& rh)
 	z = rh.z;
 	return *this;
 }
-
+//Additive operator overloading to add x to righthand of vec3
 inline vec3& vec3::operator +=(vec3 const& rh)
 {
 	x += rh.x;
@@ -69,6 +70,7 @@ inline vec3& vec3::operator +=(vec3 const& rh)
 	z += rh.z;
 	return *this;
 }
+//multiply operator overloading to add x to righthand of vec3
 inline vec3& vec3::operator *=(float const rh)
 {
 	x *= rh;
@@ -80,15 +82,17 @@ inline vec3 const vec3::operator *(float const rh) const
 {
 	return vec3((x * rh), (y * rh), (z * rh));
 }
+//divisor operator overloader for vec3
 inline vec3 const vec3::operator /(float const rh) const
 {
 	return vec3((x / rh), (y / rh), (z / rh));
 }
+//subtract operator overloader for vec3
 inline vec3 const vec3::operator -(vec3 const& rh) const
 {
 	return vec3((x - rh.x), (y - rh.y), (z - rh.z));
 }
-
+//additive operator operator overloader for vec3
 inline vec3 const vec3::operator +(vec3 const& rh) const
 {
 	return vec3((x + rh.x), (y + rh.y), (z + rh.z));
@@ -96,7 +100,7 @@ inline vec3 const vec3::operator +(vec3 const& rh) const
 
 #endif	// __cplusplus
 
-
+//C functions that dont need to be used.
 inline floatv vec3default(float3 v_out)
 {
 	v_out[0] = v_out[1] = v_out[2] = 0.0f;

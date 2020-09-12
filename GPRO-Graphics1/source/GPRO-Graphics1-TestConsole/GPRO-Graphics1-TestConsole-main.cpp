@@ -49,6 +49,7 @@ double hit_sphere(const vec3& center, float radius, const ray& r) {
 	float half_b = dot(oc, r.direction());
 	float c = oc.length_squared() - radius * radius;
 	float discriminant = half_b * half_b - 4 * a * c;
+	//if the sphere was hit or not, the calculation of the place from the origin is calculated
 	if (discriminant < 0) {
 		return -1.0;
 	}
@@ -61,6 +62,7 @@ double hit_sphere(const vec3& center, float radius, const ray& r) {
 //Reason: as hit, it will determine what specific color got hit and make the ray that color
 vec3 ray_color(const ray& r, const hittable& world) {
 	hit_record rec;
+	//the if to create the color of the hit ray.
 	if (world.hit(r, 0, infinity, rec)) {
 		return (rec.normal + color(1, 1, 1)) * 0.5f;
 	}
@@ -101,9 +103,9 @@ int main(int const argc, char const* const argv[])
 	
 
 	// Image
-	const float aspect_ratio = 16.0f / 9.0f;
-	const int image_width = 400;
-	const int image_height = static_cast<int>(image_width / aspect_ratio);
+	const float aspect_ratio = 16.0f / 9.0f; //aspect ratio
+	const int image_width = 400;// image's width
+	const int image_height = static_cast<int>(image_width / aspect_ratio); //images height
 
 	// World
 	hittable_list world;
@@ -112,18 +114,20 @@ int main(int const argc, char const* const argv[])
 
 	// Camera
 
-	float viewport_height = 2.0;
-	float viewport_width = aspect_ratio * viewport_height;
-	float focal_length = 1.0;
+	float viewport_height = 2.0; //viewport height
+	float viewport_width = aspect_ratio * viewport_height; //viewport width
+	float focal_length = 1.0;//focal length
 
-	point3 origin = point3(0, 0, 0);
-	vec3 horizontal = vec3(viewport_width, 0, 0);
-	vec3 vertical = vec3(0, viewport_height, 0);
-	point3 lower_left_corner = origin - horizontal / 2 - vertical / 2 - vec3(0, 0, focal_length);
+	point3 origin = point3(0, 0, 0); //origin
+	vec3 horizontal = vec3(viewport_width, 0, 0); //horizontal
+	vec3 vertical = vec3(0, viewport_height, 0); //vertical
+	point3 lower_left_corner = origin - horizontal / 2 - vertical / 2 - vec3(0, 0, focal_length);//lower left corner of ppm
 	// Render
 
 	std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
+
+	//compilation of the ppm file through the color builder
 	for (int j = image_height - 1; j >= 0; --j) {
 		std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
 		for (int i = 0; i < image_width; ++i) {

@@ -25,9 +25,11 @@ class sphere : public hittable {
 public:
     sphere() {}
     sphere(point3 cen, float r) : center(cen), radius(r) {};
+    //boolean function of hit
     virtual bool hit(
         const ray& r, float tmin, float tmax, hit_record& rec) const override;
 
+    //public variables
     point3 center;
     float radius;
 };
@@ -41,6 +43,7 @@ bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const 
     float c = oc.length_squared() - radius * radius;
     float discriminant = half_b * half_b - a * c;
 
+    //if statement to determine whether the sphere was hit or not
     if (discriminant > 0) {
         float root = sqrt(discriminant);
 

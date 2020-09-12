@@ -21,20 +21,23 @@ Accessed 9 09. 2020.
 //reason: to initialize the class to incorporate into the program.
 class ray {
 public:
+    //ray constructors
     ray() {}
     ray(const point3& origin, const vec3& direction)
         : orig(origin), dir(direction)
     {}
 
+    // origin and direction functions
     point3 origin() const { return orig; }
     vec3 direction() const { return dir; }
 
+    //Origin of ray + t(direction of ray)
     point3 at(float t) const {
 
-        return orig + dir * t;
+        return orig + (dir * t);
     }
 
-public:
+    //public variables
     point3 orig;
     vec3 dir;
 };
