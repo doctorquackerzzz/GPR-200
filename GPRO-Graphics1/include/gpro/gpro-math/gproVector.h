@@ -25,7 +25,7 @@
 #ifndef _GPRO_VECTOR_H_
 #define _GPRO_VECTOR_H_
 
-
+#include <cmath>
 #ifdef __cplusplus
 // DB: link C++ symbols as if they are C where possible
 extern "C" {
@@ -73,22 +73,11 @@ union vec3
 	vec3& operator =(vec3 const& rh);	// assignment operator (copy other to this)
 
 	vec3& operator +=(vec3 const& rh);	// addition assignment operator (add other to this)
-	vec3& operator *=(const float rh);	// multiplication operator (multiply this by other)
 
 	vec3 const operator +(vec3 const& rh) const;	// addition operator (get sum of this and another)
-	vec3 const operator *(float rh) const;			// multiplication operator (multiply this by other and return a new vec3)
-
-	
-
-	vec3 const operator /(float rh) const;			// division operator (divide each element by a float rh)
-
-	vec3 const operator -(vec3 const& rh) const;	// subtraction operator (subtract a vector and return a new vector)
 
 #endif	// __cplusplus
 };
-
-using point3 = vec3;	// 3D point
-using color = vec3;		// RBG color
 
 
 // DB: declare C functions (all equivalents of above C++ functions are here)
@@ -106,10 +95,6 @@ floatv vec3sum(float3 v_sum, float3 const v_lh, float3 const v_rh);	// get sum o
 #ifdef __cplusplus
 // DB: end C linkage for C++ symbols
 }
-float dot(const vec3& u, const vec3& v);	// Calculates the dot product of two vectors
-
-vec3 unit_vector(vec3 const& rh);			// Calculates the unit vector
-
 #endif	// __cplusplus
 
 

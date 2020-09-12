@@ -39,5 +39,5 @@ inline double degrees_to_radians(double degrees) {
 
 #include "ray.h"
 #include "gpro/gpro-math/gproVector.h"
-#include "gpro/vec3.h"
+#include "vec3.h"
 #endif
