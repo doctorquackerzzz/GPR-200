@@ -18,8 +18,8 @@
 	gproVector.h
 	Interface for vectors. Sets an example for C and C++ compatible headers.
 
-	Modified by: ____________
-	Modified because: ____________
+	Modified by: Nico Omenetto
+	Modified because: to apply what Peter Shirley wrote in vec3.h and manipulate it to the gproVector.h given by Prof. Buckstein
 */
 /*
 Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
