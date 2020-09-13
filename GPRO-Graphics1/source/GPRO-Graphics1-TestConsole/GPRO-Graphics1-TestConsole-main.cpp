@@ -18,6 +18,7 @@
 	GPRO-Graphics1-TestConsole-main.c/.cpp
 	Main entry point source file for a Windows console application.
 
+	Created by: Professor Daniel Buckstein
 	Modified by: Nico Omenetto
 	Modified because: The starting point for the assignment as well as the creation of the ppm file within the main function
 */

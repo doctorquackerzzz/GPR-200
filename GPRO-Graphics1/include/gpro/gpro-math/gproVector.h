@@ -18,6 +18,7 @@
 	gproVector.h
 	Interface for vectors. Sets an example for C and C++ compatible headers.
 
+	Created by: Professor Daniel Buckstein
 	Modified by: Nico Omenetto
 	Modified because: to apply what Peter Shirley wrote in vec3.h and manipulate it to the gproVector.h given by Prof. Buckstein
 */
