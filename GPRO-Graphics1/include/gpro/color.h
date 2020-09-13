@@ -13,7 +13,8 @@
 /*
 Contains Code from the following source:
 
-Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Chapter 3.3
+Ray Tracing in One Weekend. https://raytracing.github.io/books/RayTracingInOneWeekend.html#thevec3class/colorutilityfunctions
 Peter Shirley
 Accessed 9 09. 2020.
 
