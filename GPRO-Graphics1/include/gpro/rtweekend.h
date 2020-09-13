@@ -15,7 +15,8 @@
 /*
 Contains Code from the following source:
 
-Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Chapter 6.7
+Ray Tracing in One Weekend. https://raytracing.github.io/books/RayTracingInOneWeekend.html#surfacenormalsandmultipleobjects/commonconstantsandutilityfunctions
 Peter Shirley
 Accessed 9 09. 2020.
 

@@ -18,13 +18,15 @@
 	gproVector.h
 	Interface for vectors. Sets an example for C and C++ compatible headers.
 
+	Created by: Professor Daniel Buckstein
 	Modified by: Nico Omenetto
 	Modified because: to incorporate the inline overloaded operators into their respective calss in gproVector.h
 */
 /*
 Contains Code from the following source:
 
-Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Chapter 3.2
+Ray Tracing in One Weekend. https://raytracing.github.io/books/RayTracingInOneWeekend.html#thevec3class/vec3utilityfunctions
 Peter Shirley
 Accessed 9 09. 2020.
 
@@ -85,6 +87,7 @@ inline vec3& vec3::operator *=(float const rh)
 	z *= rh;
 	return *this;
 }
+
 inline vec3 const vec3::operator *(float const rh) const
 {
 	return vec3((x * rh), (y * rh), (z * rh));

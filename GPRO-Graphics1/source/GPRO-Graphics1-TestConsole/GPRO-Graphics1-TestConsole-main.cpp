@@ -42,13 +42,14 @@ Accessed 9 09. 2020.
 #include "gpro/sphere.h"
 
 
+//Chapter 5 and Chapter 6
 //Intent: to calculato whether the sphere has been hit
 //Reason: for if the sphere is hit, it will calculate where it can be
 double hit_sphere(const vec3& center, float radius, const ray& r) {
-	vec3 oc = r.origin() - center;
-	float a = r.direction().length_squared();
-	float half_b = dot(oc, r.direction());
-	float c = oc.length_squared() - radius * radius;
+	point3 oc = r.origin() - center; //origin of ray - center
+	float a = r.direction().length_squared(); //direction of the ray, length squared
+	float half_b = dot(oc, r.direction()); //dot product of oc and the ray's direction
+	float c = oc.length_squared() - radius * radius; // length squared of oc - radius times radius
 	float discriminant = half_b * half_b - 4 * a * c;
 	//if the sphere was hit or not, the calculation of the place from the origin is calculated
 	if (discriminant < 0) {
@@ -59,17 +60,18 @@ double hit_sphere(const vec3& center, float radius, const ray& r) {
 	}
 }
 
+//Chapter 5
 //Intent: To create the ray color
 //Reason: as hit, it will determine what specific color got hit and make the ray that color
-vec3 ray_color(const ray& r, const hittable& world) {
+color ray_color(const ray& r, const hittable& world) {
 	hit_record rec;
 	//the if to create the color of the hit ray.
 	if (world.hit(r, 0, infinity, rec)) {
 		return (rec.normal + color(1, 1, 1)) * 0.5f;
 	}
-	vec3 unit_direction = unit_vector(r.direction());
-	float t = (unit_direction.y + 1.0f) * 0.5f;
-	return (color(1.0f, 1.0f, 1.0f) * (1.0f - t) + (color(0.5f, 0.7f, 1.0f) * t));
+	vec3 unit_direction = unit_vector(r.direction()); // unit vector of the ray's direction
+	float t = (unit_direction.y + 1.0f) * 0.5f; // y of unit direction + 1 float () times .5 float
+	return (color(1.0f, 1.0f, 1.0f) * (1.0f - t) + (color(0.5f, 0.7f, 1.0f) * t)); //color vector times (1 float - float t) plus (new vector color times float t)
 }
 
 void testVector()
@@ -132,11 +134,11 @@ int main(int const argc, char const* const argv[])
 	for (int j = image_height - 1; j >= 0; --j) {
 		std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
 		for (int i = 0; i < image_width; ++i) {
-			float u = float(i) / (image_width - 1);
-			float v = float(j) / (image_height - 1);
-			ray r(origin, lower_left_corner + (horizontal * u) + (vertical * v));
+			float u = float(i) / (image_width - 1); // float of i divided by imagewidth-1
+			float v = float(j) / (image_height - 1); // float of j divided by imageheight-1
+			ray r(origin, lower_left_corner + (horizontal * u) + (vertical * v)); //ray consists of origin, and the lowere left corner + the product of horizontal times float u + the product of vertical time float v
 			color pixel_color = ray_color(r, world);
-			write_color(std::cout, pixel_color);
+			write_color(std::cout, pixel_color); //color displayment
 
 		}
 	}

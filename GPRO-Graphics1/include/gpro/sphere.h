@@ -9,9 +9,10 @@
 */
 /*
 Contains Code from the following source:
-
-Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Chapter 6.3
+Ray Tracing in One Weekend. https://raytracing.github.io/books/RayTracingInOneWeekend.html#surfacenormalsandmultipleobjects/anabstractionforhittableobjects
 Peter Shirley
+
 Accessed 9 09. 2020.
 
 */
@@ -31,24 +32,24 @@ public:
 
     //public variables
     point3 center;
-    float radius;
+    float radius = 30.0f; // initialized radius
 };
 
 //intent: to determine whether or not the sphere has been hit
 //reason: to provide a sense as to what the equations are to calculate whther the sphere was hit
 bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
-    vec3 oc = r.origin() - center;
-    float a = r.direction().length_squared();
-    float half_b = dot(oc, r.direction());
-    float c = oc.length_squared() - radius * radius;
-    float discriminant = half_b * half_b - a * c;
+    point3 oc = r.origin() - center; //ray point of origin minus center = oc
+    float a = r.direction().length_squared(); //vector of direction length squared
+    float half_b = dot(oc, r.direction()); // dot product of oc and the direction of ray
+    float c = oc.length_squared() - radius * radius; // length squared of oc vector - radius times radius
+    float discriminant = half_b * half_b - a * c; // half of b * half of b - a times c
 
     //if statement to determine whether the sphere was hit or not
     if (discriminant > 0) {
         float root = sqrt(discriminant);
 
         float temp = (-half_b - root) / a;
-        if (temp < t_max && temp > t_min) {
+        if (temp < t_max && temp > t_min) {  //if temporary value was less than max and greater than min for -halfb - root/a
             rec.t = temp;
             rec.p = r.at(rec.t);
             vec3 outward_normal = (rec.p - center) / radius;
@@ -57,7 +58,7 @@ bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const 
         }
 
         temp = (-half_b + root) / a;
-        if (temp < t_max && temp > t_min) {
+        if (temp < t_max && temp > t_min) { //if temporary value is less than max or greater than min 
             rec.t = temp;
             rec.p = r.at(rec.t);
             vec3 outward_normal = (rec.p - center) / radius;

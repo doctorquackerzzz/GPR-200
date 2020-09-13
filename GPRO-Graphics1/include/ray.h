@@ -9,8 +9,8 @@
 */
 /*
 Contains Code from the following source:
-
-Ray Tracing in One Weekend. raytracing.github.io/books/RayTracingInOneWeekend.html
+Chapter 4.1
+Ray Tracing in One Weekend. https://raytracing.github.io/books/RayTracingInOneWeekend.html#rays,asimplecamera,andbackground/therayclass
 Peter Shirley
 Accessed 9 09. 2020.
 
@@ -34,7 +34,7 @@ public:
     //Origin of ray + t(direction of ray)
     point3 at(float t) const {
 
-        return orig + (dir * t);
+        return orig + (dir * t); //origin + (direction * float t)
     }
 
     //public variables
