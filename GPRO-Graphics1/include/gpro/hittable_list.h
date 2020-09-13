@@ -46,11 +46,11 @@ bool hittable_list::hit(const ray& r, float t_min, float t_max, hit_record& rec)
     //variables
     hit_record temp_rec;
     bool hit_anything = false;
-    float closest_so_far = t_max;
+    float closest_so_far = 0;
 
     //for if to determine if the sphere got hit.
-    for (int i = 0; i < t_max; i++) {
-        if (hit(r, t_min, closest_so_far, temp_rec)) {
+    for (int i = 0; i < objects.size(); i++) {
+        if (objects[i]->hit(r, t_min, closest_so_far, temp_rec)) {
             hit_anything = true;
             closest_so_far = temp_rec.t;
             rec = temp_rec;

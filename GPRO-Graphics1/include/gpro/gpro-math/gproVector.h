@@ -85,10 +85,10 @@ union vec3
 
 	vec3& operator +=(vec3 const& rh);	// addition assignment operator (add other to this)
 	vec3& operator *=(const float rh);	// multiplication operator (multiply this by other)
-	vec3 const operator *(float rh) const; 
+	vec3 const operator *(float rh) const; // multiplication operator (multiply this by other into the total length
 	
 	vec3 const operator +(vec3 const& rh) const;	// addition operator (get sum of this and another)
-	vec3 const operator /(float rh) const;
+	vec3 const operator /(float rh) const; //divisor operator (get quotient of this and add to total)
 	vec3 const operator -(vec3 const& rh) const;// subtraction operator (get difference of this and another)
 #endif	// __cplusplus
 };

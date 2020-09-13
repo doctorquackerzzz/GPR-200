@@ -53,7 +53,14 @@ inline vec3::vec3(vec3 const& rh)
 	: x(rh.x), y(rh.y), z(rh.z)
 {
 }
-
+inline float vec3::length() const
+{
+	return float(sqrt(length_squared()));
+}
+inline float vec3::length_squared() const
+{
+	return ((x * x) + (y * y) + (z * z));
+}
 //equality operator overload
 inline vec3& vec3::operator =(vec3 const& rh)
 {
