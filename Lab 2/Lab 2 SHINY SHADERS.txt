@@ -1,12 +1,6 @@
 #define colorRGB vec3
 #define colorRGBA vec4
 
-vec3 rgb2hsl(vec3 rgb)
-{
-    vec3 hsl;
-    
-    return hsl;
-}
 
 
 //simple colors (CLASS MADE ONE)
@@ -29,15 +23,15 @@ vec4 myEffect1(in vec2 fragCoord, in vec2 resolution)
 {
     vec2 uv = fragCoord / iResolution.xy;
     
-    vec4 white = colorRGBA(1.0, 1.0, 1.0, 1.0);
-    vec4 black = colorRGBA(0.0, 0.0, 0.0, 1.0);
+    vec4 white = colorRGBA(1.0, 1.0, 1.0, 1.0); //white
+    vec4 black = colorRGBA(0.0, 0.0, 0.0, 1.0); //black
     
-    float checkerboardSize = 3.0; //the lower this is, the more tripped out someone can get
+    float checkerboardSize = 3.0; //the lower this is, the worse the eyesight
     
     vec2 pos = mod(floor(fragCoord / checkerboardSize), 2.0);  
-    if(mod(pos.x + pos.y, 2.0) != 0.0)
+    if(mod(pos.x + pos.y, 2.0) != 0.0) // if the modulation does not equal 0, return the white color
         return white;
-    else if(pos.x + pos.y == 0.0) //Determines the tile color
+    else if(pos.x + pos.y == 0.0) //if x position plus y position equal 0, return black color
         return black;
 }
 
@@ -45,10 +39,10 @@ vec4 myEffect1(in vec2 fragCoord, in vec2 resolution)
 vec4 myEffect2(in vec2 fragCoord, in vec2 resolution)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float radius = 0.3*abs(sin(iTime)) +.1;
+    float radius = 0.3*abs(sin(iTime)) +.1; //the change in radius over time
     
-    vec2 origin = uv - vec2(0.5);
-    float circle = smoothstep(radius-(radius * 0.01), radius+(radius * 0.01), dot(origin, origin) * 2.0);
+    vec2 origin = uv - vec2(0.5); //point of origin of the circle
+    float circle = smoothstep(radius-(radius * 0.01), radius+(radius * 0.01), dot(origin, origin) * 2.0); //animation of the enlargment and decreasement of the circle
     
     vec3 color = vec3(circle);
     return vec4(color, 1.0);
@@ -70,12 +64,13 @@ vec4 myEffect3(in vec2 fragCoord, in vec2 resolution)
     background += texture(iChannel0, iResolution.xy/256.*uv).x/255.;
     
     vec4 boxLimitations = vec4(0.45, 0.55, 0.2, 0.8); //xmin, xmax, ymin, ymax;
-    boxLimitations.xy += 0.4*sin(iTime*2.);
+    boxLimitations.xy += 0.4*sin(iTime*2.); //dimensions of the box as it moves between areas in the effect in time
     
-    vec2 box = step(boxLimitations.xz, uv) - step(boxLimitations.yw, uv);
+    vec2 box = step(boxLimitations.xz, uv) - step(boxLimitations.yw, uv); //the change in the box's position
     
     return vec4(box.x * box.y == 1. ? .2 : background);
 }
+
 
 //Ripple Effect
 //Attained from https://www.shadertoy.com/view/WtjBRc by user bitbandit
@@ -85,23 +80,40 @@ vec4 myEffect3(in vec2 fragCoord, in vec2 resolution)
 //creating various water graphics as if things fell in the water from the top down in 3D.
 vec4 myEffect4(in vec2 fragCoord, in vec2 resolution)
 {
-    vec2 cp = -1.0 + 2.0 * fragCoord / iResolution.xy;
-    float cl = length(cp);
-    vec2 uv = fragCoord / iResolution.xy + (cp / cl) * cos(cl * 12.0 - iTime * 4.0) * 0.02;
-    vec3 col = texture(iChannel0, uv).xyz;
-    return vec4(col, 1.0);
+    vec2 centerPoint = -1.0 + 2.0 * fragCoord / iResolution.xy; //the center point of the ripple effect
+    float circle = length(centerPoint); //circle
+    vec2 uv = fragCoord / iResolution.xy + (centerPoint / circle) * cos(circle * 12.0 - iTime * 4.0) * 0.02; //the ongoing extersion of the circle
+    vec3 collision = texture(iChannel0, uv).xyz; //use of the texture given in iChannel0
+    return vec4(collision, 1.0);
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     //Solid Color  R, G, B, A
     //fragColor = vec4(1.0, 1.0 ,1.0 ,1.0);
     
-    //fragColor = myEffect0(fragCoord, iResolution.xy);
-    //fragColor = myEffect1(fragCoord, iResolution.xy);
-    //fragColor = myEffect2(fragCoord, iResolution.xy);
-    //fragColor = myEffect3(fragCoord, iResolution.xy);
-    fragColor = myEffect4(fragCoord, iResolution.xy);
+    //Uncomment each of the effects to view them in action.
+    
+    //fragColor = myEffect0(fragCoord, iResolution.xy);  //Gradient Color
+    //fragColor = myEffect1(fragCoord, iResolution.xy);  //Checkerboard Effect
+    //fragColor = myEffect2(fragCoord, iResolution.xy);	//Enlarging Circle Effect
+    //fragColor = myEffect3(fragCoord, iResolution.xy);	//Contrast Effect (used from source)
+    //fragColor = myEffect4(fragCoord, iResolution.xy); //Ripple Effect (used from source)
+    
+    
+    
     // Normalized pixel coordinates (from 0 to 1)
     //vec2 uv = fragCoord/iResolution.xy;
 
