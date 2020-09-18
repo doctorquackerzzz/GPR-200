@@ -11,7 +11,7 @@ vec4 myEffect0(in vec2 fragCoord, in vec2 resolution)
     //vec3 color = vec3(0.0, 0.5, 0.1);
     
     vec2 uv = fragCoord / iResolution.xy;
-    vec3 color = colorRGB(uv, 0.25);
+    vec3 color = colorRGB(uv, 1);
     
     float alpha = 1.0;
     return colorRGBA(color, alpha);
@@ -48,8 +48,12 @@ vec4 myEffect2(in vec2 fragCoord, in vec2 resolution)
     return vec4(color, 1.0);
 }
 
+
+//Black and White Gradient
+//Attained reference from https://www.shadertoy.com/view/XsdyDf from user ga354
+//
 //Contrast Effect
-//Attained from https://www.shadertoy.com/view/XsdyDf from user ga354
+//Attained reference from https://www.shadertoy.com/view/XsdyDf from user ga354
 //
 //I like this because it's able to pinpoint a certain luminance effect
 //that I was looking for, using the contrast between black and white to
@@ -60,32 +64,18 @@ vec4 myEffect3(in vec2 fragCoord, in vec2 resolution)
     
     vec2 uv = fragCoord/iResolution.xy;
     
-  	float background = .1 + .8*pow(uv.x, 2.0); // transforms the color in between the shadows
-    background += texture(iChannel0, iResolution.xy/256.*uv).x/255.;
+    float background = -.5 + 1.2*pow(uv.x,uv.y); // transforms the split line of the two contrasting colors (such as black and white for this)
+    background += texture(iChannel0, iResolution.xy/256.*uv).x/260.;
     
     vec4 boxLimitations = vec4(0.45, 0.55, 0.2, 0.8); //xmin, xmax, ymin, ymax;
-    boxLimitations.xy += 0.4*sin(iTime*2.); //dimensions of the box as it moves between areas in the effect in time
+    boxLimitations.xy += 0.4*sin(iTime*3.); //how far the box goes in distance multiplied by the speed it takes for the box to get from one end to another
     
     vec2 box = step(boxLimitations.xz, uv) - step(boxLimitations.yw, uv); //the change in the box's position
     
-    return vec4(box.x * box.y == 1. ? .2 : background);
+    return vec4(box.x * box.y == 1. ? .3 : background);
 }
 
 
-//Ripple Effect
-//Attained from https://www.shadertoy.com/view/WtjBRc by user bitbandit
-//
-//I really like this effect because it gives a calm sense of nature as like it's actual
-//water rippling, in the woods by a river. I believe it's a very interesting effect especially for
-//creating various water graphics as if things fell in the water from the top down in 3D.
-vec4 myEffect4(in vec2 fragCoord, in vec2 resolution)
-{
-    vec2 centerPoint = -1.0 + 2.0 * fragCoord / iResolution.xy; //the center point of the ripple effect
-    float circle = length(centerPoint); //circle
-    vec2 uv = fragCoord / iResolution.xy + (centerPoint / circle) * cos(circle * 12.0 - iTime * 4.0) * 0.02; //the ongoing extersion of the circle
-    vec3 collision = texture(iChannel0, uv).xyz; //use of the texture given in iChannel0
-    return vec4(collision, 1.0);
-}
 
 
 
@@ -106,11 +96,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     //Uncomment each of the effects to view them in action.
     
-    //fragColor = myEffect0(fragCoord, iResolution.xy);  //Gradient Color
+    fragColor = myEffect0(fragCoord, iResolution.xy);  //Gradient Color
     //fragColor = myEffect1(fragCoord, iResolution.xy);  //Checkerboard Effect
     //fragColor = myEffect2(fragCoord, iResolution.xy);	//Enlarging Circle Effect
-    //fragColor = myEffect3(fragCoord, iResolution.xy);	//Contrast Effect (used from source)
-    //fragColor = myEffect4(fragCoord, iResolution.xy); //Ripple Effect (used from source)
+    //fragColor = myEffect3(fragCoord, iResolution.xy);	//Contrast Effect (referenced from source)
     
     
     
