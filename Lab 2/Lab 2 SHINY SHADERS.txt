@@ -21,59 +21,86 @@ vec4 myEffect0(in vec2 fragCoord, in vec2 resolution)
 //checkerboard effect
 vec4 myEffect1(in vec2 fragCoord, in vec2 resolution)
 {
-    vec2 uv = fragCoord / iResolution.xy;
+    vec2 uv = fragCoord / iResolution.xy; //same vec2 uv function
+    
+    //mod result
+    float space = 2.0;
+    
+    // determinant of whether the space on the checkerboard is white or black
+    float spaceColorDeterminant = 0.0; 
     
     vec4 white = colorRGBA(1.0, 1.0, 1.0, 1.0); //white
     vec4 black = colorRGBA(0.0, 0.0, 0.0, 1.0); //black
     
-    float checkerboardSize = 3.0; //the lower this is, the worse the eyesight
+    //the lower this is, the worse the viewer's eyesight
+    float checkerboardSize = 8.0; 
     
-    vec2 pos = mod(floor(fragCoord / checkerboardSize), 2.0);  
-    if(mod(pos.x + pos.y, 2.0) != 0.0) // if the modulation does not equal 0, return the white color
+    vec2 grid = mod(floor(fragCoord / checkerboardSize), space);  
+     
+    if(mod(grid.x + grid.y, space) != spaceColorDeterminant)
+        
+        // if the modulation does not equal 0, return the white color
         return white;
-    else if(pos.x + pos.y == 0.0) //if x position plus y position equal 0, return black color
+    
+    else if(mod(grid.x + grid.y,space) == spaceColorDeterminant) 
+        
+        //if x position plus y position equal 0, return black color
         return black;
 }
 
 //enlarging and retracting circle
 vec4 myEffect2(in vec2 fragCoord, in vec2 resolution)
 {
-    vec2 uv = fragCoord / iResolution.xy;
-    float radius = 0.3*abs(sin(iTime)) +.1; //the change in radius over time
+    float center = 0.5; //center point of the circle
+    float marginEdge = 0.001; //the sharpness effect of the edge
     
-    vec2 origin = uv - vec2(0.5); //point of origin of the circle
-    float circle = smoothstep(radius-(radius * 0.01), radius+(radius * 0.01), dot(origin, origin) * 2.0); //animation of the enlargment and decreasement of the circle
+    //the same uv function as before
+    vec2 uv = fragCoord / iResolution.xy; 
     
-    vec3 color = vec3(circle);
-    return vec4(color, 1.0);
+    //the change in radius over time
+    float radius = 0.4*abs(sin(iTime)) +.1; 
+    
+    //point of origin of the circle
+    vec2 origin = uv - vec2(center); 
+    
+    //animation of the enlargment and decreasement of the circle
+    float circle = smoothstep(radius-(radius * marginEdge), radius+(radius * marginEdge), dot(origin, origin) * 2.0); 
+    
+    vec3 render = vec3(circle); //render
+    return vec4(render, 1.0);
 }
 
 
-//Black and White Gradient
-//Attained reference from https://www.shadertoy.com/view/XsdyDf from user ga354
-//
-//Contrast Effect
-//Attained reference from https://www.shadertoy.com/view/XsdyDf from user ga354
-//
-//I like this because it's able to pinpoint a certain luminance effect
-//that I was looking for, using the contrast between black and white to
-//look like it's A.) switching colors and B.) showing  various luminesence between the background 
-// and the box.
-vec4 myEffect3(in vec2 fragCoord, in vec2 resolution)
+//psychedellic effect
+//Glitched TV line effect
+//Explanation: Old school TVs when a part of the monitor is either not working or is dysfunctional
+//referenced and adapted from https://www.shadertoy.com/view/wlfBWB from user KayKay for the wave function
+//------>
+//messed around with the wave function to get the Glitched Line effect
+vec4 myEffect3(in vec2 fragCoord, in vec2 resolution, in float time)
 {
     
+    //static gradient vec4
+    vec4 staticGradient = vec4(0.0,0.0,0.0,1.0);
+    
+    // same uv function as before
     vec2 uv = fragCoord/iResolution.xy;
+
+    // Time varying pixel color, from the main function that we are given at the bottom
+    vec3 col = 0.5 + 0.5*cos(time+uv.xyx+vec3(0,2,4));
+
+    // Output to screen
+    if(uv.y<0.5*(1.0-0.9*sin(6.0*time+30000.0*cos(uv.y))))
+        
+        //return the color changing glitched lines
+    	return vec4(col,1.0); 
     
-    float background = -.5 + 1.2*pow(uv.x,uv.y); // transforms the split line of the two contrasting colors (such as black and white for this)
-    background += texture(iChannel0, iResolution.xy/256.*uv).x/260.;
-    
-    vec4 boxLimitations = vec4(0.45, 0.55, 0.2, 0.8); //xmin, xmax, ymin, ymax;
-    boxLimitations.xy += 0.4*sin(iTime*3.); //how far the box goes in distance multiplied by the speed it takes for the box to get from one end to another
-    
-    vec2 box = step(boxLimitations.xz, uv) - step(boxLimitations.yw, uv); //the change in the box's position
-    
-    return vec4(box.x * box.y == 1. ? .3 : background);
+    else 
+        // return the static gradient
+        return staticGradient; 
 }
+
+
 
 
 
@@ -96,10 +123,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     //Uncomment each of the effects to view them in action.
     
-    fragColor = myEffect0(fragCoord, iResolution.xy);  //Gradient Color
+    //fragColor = myEffect0(fragCoord, iResolution.xy);  //Gradient Color
     //fragColor = myEffect1(fragCoord, iResolution.xy);  //Checkerboard Effect
     //fragColor = myEffect2(fragCoord, iResolution.xy);	//Enlarging Circle Effect
-    //fragColor = myEffect3(fragCoord, iResolution.xy);	//Contrast Effect (referenced from source)
+    fragColor = myEffect3(fragCoord, iResolution.xy, iTime); //glitched TV Line effect (referenced from source)
     
     
     
