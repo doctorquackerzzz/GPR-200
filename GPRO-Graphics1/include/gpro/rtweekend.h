@@ -38,6 +38,7 @@ inline double degrees_to_radians(double degrees) {
 // Common Headers
 
 #include "ray.h"
+#include "sphere.h"
 #include "gpro/gpro-math/gproVector.h"
 #include "gpro/vec3.h"
 #endif
