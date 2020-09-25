@@ -10,8 +10,32 @@
     //fragColor = vec4(col,1.0);
 //}
 
+struct hit_record {
+    vec3 point;
+    vec3 normal;
+    float temporary;
+    bool front_face;
+};
+    
+struct sphere{
+	vec3 center;
+    float radius;
+};
 
-
+void set_face_normal(vec4 rayDirection, vec4 rayOrigin, vec3 outward_normal, out hit_record rec)
+{
+    rec.front_face = dot(rayDirection.xyz, outward_normal) < 0.0;
+    //normal = front_face ? outward_normal :-outward_normal;
+    if(rec.front_face)
+    {
+        rec.normal = outward_normal;
+    }
+    else
+    {
+        rec.normal = -outward_normal;
+        
+    }
+}
 // calcViewport: calculate the viewing plane (viewport) coordinate
 //    viewport:       output viewing plane coordinate
 //    ndc:            output normalized device coordinate
@@ -76,40 +100,73 @@ float lenSq(in vec4 y)
     return dot (y,y);
 }
 
-
-
-float hitSphere (vec3 center, float radius, vec4 rayDirection, vec4 rayOrigin)
+bool hit(vec3 center, float radius, vec4 rayDirection, vec4 rayOrigin, float temp_max, float temp_min, out hit_record rec)
 {
     vec3 distanceBetweenOriAndCen = rayOrigin.xyz - center;
     float a = lenSq(rayDirection);
-    float b = 2.0 * dot(distanceBetweenOriAndCen, rayDirection.xyz);
+    float half_b = dot(distanceBetweenOriAndCen, rayDirection.xyz);
     float c = lenSq(distanceBetweenOriAndCen) - radius*radius;
-    float discriminant = b*b - 4.0*a*c;
-    if (discriminant < 0.0) {
-        return -1.0;
-    } else {
-        return (-b - sqrt(discriminant) ) / (2.0*a);
+    float discriminant = half_b*half_b - a*c;
+
+    if (discriminant > 0.0) {
+        float root = sqrt(discriminant);
+
+        float temp = (-half_b - root) / a;
+        if (temp < temp_max && temp > temp_min) {
+            rec.temporary = temp;
+            rec.point = rayOrigin.xyz + (rec.temporary * rayDirection.xyz);
+            vec3 outward_normal = (rec.point - center) / radius;
+            set_face_normal(rayDirection, rayOrigin, outward_normal, rec);
+            return true;
+        }
+
+        temp = (-half_b + root) / a;
+        if (temp < temp_max && temp > temp_min) {
+            rec.temporary = temp;
+            rec.point = rayOrigin.xyz + ( rec.temporary * rayDirection.xyz );
+            vec3 outward_normal = (rec.point - center) / radius;
+            set_face_normal(rayDirection, rayOrigin, outward_normal, rec);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+bool hittable (vec4 rayDirection, vec4 rayOrigin, out float temp_max, float temp_min, out hit_record rec, sphere test)
+{
+    hit_record temp_rec;
+    bool hitAnything = false;
+    if (hit(test.center, test.radius, rayDirection, rayOrigin, temp_max, temp_min, temp_rec))
+    {
+        hitAnything = true;
+        temp_max = temp_rec.temporary;
+        rec = temp_rec;
     }
         
     //return (discriminant > 0.0);
-    
+    return hitAnything;
 }
 
 // calcColor: calculate the color of a pixel given a ray
 //    rayDirection: input ray direction
 //    rayOrigin:    input ray origin
-vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
+vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin, in sphere sphereArray[2])
 {
    
-    float hit = hitSphere(vec3(0.0, 0.0, -1.0), 0.5, rayDirection, rayOrigin);
-    if(hit > 0.0)
+   hit_record rec;
+    float temp_max = 1.0/0.0;
+    
+    bool testOne = hittable(rayDirection, rayOrigin, temp_max, 0.0, rec, sphereArray[0]);
+    bool testTwo = hittable(rayDirection, rayOrigin, temp_max, 0.0, rec, sphereArray[1]);
+    if (testOne || testTwo)
     {
-     	 vec3 store = unit_vector(rayOrigin.xyz + (hit * rayDirection.xyz));
-     	return vec4(0.5*(store.x + 1.0),0.5*(store.y + 1.0), 0.5*(store.z + 1.0), 1.0);  
+     	 return 0.5 *(vec4(rec.normal, 1.0) + vec4(1.0));
     }
     vec4 unitDirection = unit_vector(rayDirection);
 
-    hit = 0.5 * (unitDirection.y + 1.0);
+    float hit = 0.5 * (unitDirection.y + 1.0);
 
     rayDirection = mix(vec4(1.0), vec4(0.5, 0.7, 1.0, 1.0), hit);
     
@@ -126,7 +183,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     vec2 viewport, ndc, uv, resolutionInv;
     float aspect;
     const float viewportHeight = 2.0, focalLength = 1.0;
+	sphere testSphere1;
+    sphere testSphere2;
 
+    testSphere1.center = vec3(0.0, 0.0, -1.0);
+    testSphere2.center = vec3(0.0, -100.5, -1.0);
+
+    testSphere1.radius = 0.5;
+    testSphere2.radius = 100.0;
+
+	//sphere array
+    sphere sphereArray[2] = sphere[2](testSphere1, testSphere2);
     // ray
     vec4 rayDirection, rayOrigin;
 
@@ -139,7 +206,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     
 
     // color
-    fragColor = calcColor(rayDirection, rayOrigin);
+    fragColor = calcColor(rayDirection, rayOrigin, sphereArray);
 
     // TEST COLOR:
     //  -> what do the other things calculated above look like?
