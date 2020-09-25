@@ -7,7 +7,11 @@
 //Chapter 5 (Adding a Sphere): https://raytracing.github.io/books/RayTracingInOneWeekend.html#addingasphere
 //Chapter 6 (Surface Normal, and Multiple Spheres): https://raytracing.github.io/books/RayTracingInOneWeekend.html#surfacenormalsandmultipleobjects
 //Chapter 7 (Antialiasing): https://raytracing.github.io/books/RayTracingInOneWeekend.html#antialiasing
-
+//
+//File Name: Lab 3 (banana Shaders).txt
+//Purpose of the file: to incorporate Peter Shirley's Github.io instructions from Ray Tracing in one Weekend over to a GLSL compiler such as Shadertoy
+//
+//FAULT (9/25/2020): After checking again this morning on Shadertoy, the camera seems to screw up and show a black screen, and when I reverted back to a previous state, such as when Chapter 6 was completed, the program worked fine
 
 
 //void mainImage(out vec4 fragColor, in vec2 fragCoord) // original Shadertoy Output function
