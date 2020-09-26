@@ -12,8 +12,12 @@
 //Purpose of the file: to incorporate Peter Shirley's Github.io instructions from Ray Tracing in one Weekend over to a GLSL compiler such as Shadertoy
 //
 //FAULT (9/25/2020): After checking again this morning on Shadertoy, the camera seems to screw up and show a black screen, and when I reverted back to a previous state, such as when Chapter 6 was completed, the program worked fine
+//
+//FAULT RESOLVED (9/26/2020): new source made the randomization function from the antialiasing chapter simpler to compute, therefore negating the black screen problem from yesterday
 
 
+//SHADERTOY'S DEFAULT MAINIMAGE (NOT IN USE)
+//
 //void mainImage(out vec4 fragColor, in vec2 fragCoord) // original Shadertoy Output function
 //{
     // Normalized pixel coordinates (from 0 to 1)
@@ -27,6 +31,7 @@
 //}
 
 //hit record struct from chapter 6
+//
 struct hit_record {
     vec3 point; 
     vec3 normal;
@@ -34,14 +39,16 @@ struct hit_record {
     bool front_face;
 };
     
+//sphere struct  modified from the sphere.h file from both chapter 5-6
 struct sphere{
 	vec3 center;
     float radius;
 };
 
 //camera struct, modified from Chapter 7    
+//
 struct cam{
-        vec3 horizontal;
+    vec3 horizontal;
     vec3 vertical;
     vec3 lowerLeftCorner;
 };
@@ -226,12 +233,21 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin, in sphere testSpheres[2]
 
 //random generator in GLSL adopted from outside source:
 //
-//outside source : 
+//outside source : https://www.geeks3d.com/20100831/shader-library-noise-and-pseudo-random-number-generator-in-glsl/
+//second outside source: https://stackoverflow.com/questions/4200224/random-noise-functions-for-glsl
 float randomGen(vec2 rand)
 {
-    int n = int(rand.x * 40.0 + rand.y * 6400.0);
-    n = (n << 13) ^ n;
-    return 1.0 - float( (n * (n * n * 15731 + 789221) + \ 1376312589) & 0x7fffffff) / 1073741824.0;
+	//first source
+    //int n = int(rand.x * 40.0 + rand.y * 6400.0);
+    //n = (n << 13) ^ n;
+    //return 1.0 - float( (n * (n * n * 15731 + 789221) + \ 1376312589) & 0x7fffffff) / 1073741824.0;
+	
+    //FIRST SOURCE FAULT: returns an extreme subcase as to where a location that normally resides in debugging lies. Outputs a black screen throughout the displayment
+    
+    //second source
+    return fract(sin(dot(rand.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    //returns the fractional part of the sin of the dot product of the random float's x and y and the vec 3 variable containing the values 12.9898 and 78.233
+    //it is then multiplied by the value of 43758.5453, in order to get the final fractoral to run
 }
 
 //ORIGINAL BASE FUNCTION GIVEN TO US BY DANIEL BUCKSTEIN, WITH VARIOUS SETUP FUNCTIONS APPLIED FROM THE ORIGINAL
@@ -269,19 +285,19 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
                  viewportHeight, fragCoord, iResolution.xy); // viewport Calculation function call
     calcRay(rayDirection, rayOrigin,
             viewport, focalLength); // ray calculation function call
-    set_camera(camera, rayOrigin, aspect*viewportHeight, viewportHeight, focalLength); //camera set function call
+    set_cam(camera, rayOrigin, aspect*viewportHeight, viewportHeight, focalLength); //camera set function call
     
     vec4 build; //temporary vec4 declaration
     
-    for (float iTemp = 0.0; i < samples_per_pixel; i++) // for loop of configuring the camera to match with the vec4 declared a line earlier
+    for (float iTemp = 0.0; iTemp < samples_per_pixel; iTemp++) // for loop of configuring the camera to match with the vec4 declared a line earlier
     {
-        float u = (fragCoord.x + randomGen(fragCoord)) / ((viewportHeight.aspect) - 1.0); //aspect of viewport height calculated along with the random add of the x of fragment Coordinate
+        float u = (fragCoord.x + randomGen(fragCoord)) / ((viewportHeight * aspect) - 1.0); //the product of viewport height and the aspect divided with the random add of the x of fragment Coordinate minus a float of 1.0
         float v = (fragCoord.x + randomGen(fragCoord)) / (viewportHeight- 1.0); //viewport height calculated along with the random add of the x of fragment Coordinate
-        rayDirection = vec4(camera.lowerLeftCorner + u * camera.horizontal + v * camera_vertical, 1.0) - rayOrigin; // ray direection is equal to the previous float equations corresponding to an aspect of the camera being manipulated, minus the origin of the ray
+        rayDirection = vec4(camera.lowerLeftCorner + u * camera.horizontal + v * camera.vertical, 1.0) - rayOrigin; // ray direection is equal to the previous float equations corresponding to an aspect of the camera being manipulated, minus the origin of the ray
 
         calcRay(rayDirection, rayOrigin, viewport, focalLength); //calculation of ray function call
         
-        build += calcColor(rayDirection, rayOrigin, sphereArray); //the vec4 is equal to the additive of the calling of the calcColor function
+        build += calcColor(rayDirection, rayOrigin, testSpheres); //the vec4 is equal to the additive of the calling of the calcColor function
     }
     
     float scale = 1.0 / samples_per_pixel; //scale float is equal to 1 divided by the samples per pixel
