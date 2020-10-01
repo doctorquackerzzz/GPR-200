@@ -61,6 +61,19 @@ void calcRay(out vec4 rayDirection, out vec4 rayOrigin,
     rayDirection = asOffset(viewport - eyePosition);
 }
 
+struct lights
+{
+	vec4 center;
+	vec4 color,
+	float intensity;
+};
+void initLights(out lights light, in vec4 center, in vec4 color, in float intensity)
+{
+	light.center = asPoint(center);
+	light.color = color;
+	light.intensity = intensity;
+}
+
 struct sSphere
 {
     vec4 center;
@@ -78,6 +91,7 @@ struct sSphere
     sphere.radius = 1.0;
     return false;
 }*/
+
 
 void initSphere(out sSphere sphere, in vec3 center, in float radius)
 {
@@ -103,6 +117,10 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     sSphere sphere;
     initSphere(sphere, vec3(0.0, 0.0, -4.0), 0.5);
     
+    //LIGHTS
+    lights light;
+    initLight(light, vec3(0.0, 0.0, -4.0), vec4 (1.0, 1.0, 1.0, 1.0), 1.0);
+
     //TEST
     vec3 dp;
     dp.xy = rayDirection.xy - sphere.center.xy;
