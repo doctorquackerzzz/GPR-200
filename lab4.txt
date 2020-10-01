@@ -79,12 +79,16 @@ struct sSphere
     return false;
 }*/
 
-void initSphere(sSphere sphere, in vec3 center, in float radius)
+void initSphere(out sSphere sphere, in vec3 center, in float radius)
 {
     sphere.center = asPoint(center);
     sphere.radius = radius;
 }
 
+float lenSq(vec2 x)
+{
+	return dot(x,x);
+}
 
 // calcColor: calculate the color of a pixel given a ray
 //    rayDirection: input ray direction
@@ -97,20 +101,23 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     
     //SCENE
     sSphere sphere;
-    initSphere(sphere, vec3(0.0, 0.0, -4.0), 1.0);
+    initSphere(sphere, vec3(0.0, 0.0, -4.0), 0.5);
     
     //TEST
     vec3 dp;
     dp.xy = rayDirection.xy - sphere.center.xy;
-	
-    if (length(dp.xy) <= sphere.radius)
+    float lsq = lenSq(dp.xy),
+	radiusSq = sphere.radius * sphere.radius;
+
+    if (lsq <= radiusSq)
     {
         //return vec4(1.0, 0.5, 0.0, 1.0);
-        dp.z = sphere.radius * sphere.radius - (dp.x * dp.x + dp.y * dp.y);
-        
+        //dp.z = sphere.radius * sphere.radius - (dp.x * dp.x + dp.y * dp.y);
+        dp.z = radiusSq - lsq;
+
         vec3 position = sphere.center.xyz + vec3(dp.x, dp.y, sqrt(dp.z));
         
-        vec3 normal = normalize(position - sphere.center.xyz);
+        vec3 normal = (position - sphere.center.xyz) / sphere.radius; //normalize(position - sphere.center.xyz);
         
         return vec4(normal * 0.5 + 0.5, 1.0);
     }
