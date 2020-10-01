@@ -119,7 +119,7 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     
     //LIGHTS
     lights light;
-    initLight(light, vec3(0.0, 0.0, -4.0), vec4 (1.0, 1.0, 1.0, 1.0), 1.0);
+    initLight(light, vec3(777.0, 444.0, -234.0), vec4 (1.0, 1.0, 1.0, 1.0), 1.0);
 
     //TEST
     vec3 dp;
@@ -135,9 +135,15 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
 
         vec3 position = sphere.center.xyz + vec3(dp.x, dp.y, sqrt(dp.z));
         
-        vec3 normal = (position - sphere.center.xyz) / sphere.radius; //normalize(position - sphere.center.xyz);
+        vec3 normal = (position - sphere.center.xyz) / sphere.radius; 
+	//vec3 normal = normalize(position - sphere.center.xyz); //old function
         
-        return vec4(normal * 0.5 + 0.5, 1.0);
+        //return vec4(normal * 0.5 + 0.5, 1.0);
+
+	//DIFFUSE COEFFICIENT
+	vec3 lightVec = normalize(light.center.xyz - rayDirection.xyz);
+	float diffCoef = max(0.0, dot(normal, lightVec)l
+	return vec4(diffCoef);
     }
 	// BACKGROUND
 	const vec3 warm = vec3(0.8, 0.4, 0.2), cool = vec3(0.2, 0.4, 0.8);
