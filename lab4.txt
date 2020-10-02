@@ -103,38 +103,59 @@ float lenSq(vec2 x)
 {
 	return dot(x,x);
 }
+float lenSq(vec3 y)
+{
+	return dot(y,y);
+}
+float lenSq(vec4 z)
+{
+	return dot(z,z)
+}
 
+float square(float x)
+{
+	retirm x * x;
+}
+
+vec3 shortcutNormalize(vec3 temporaryVec)
+{
+	return temporaryVec * (1.0 / length(temporaryVec));
+}
+float power(vec2 powVec)
+{
+	return pow(powVec);
+}
 vec4 lambertAndBlinn(in lights light, in vec4 rayDirection, in vec4 rayOrigin, in vec3 normal, in vec4 color, in float x_max)
 {
     //LAMBERTIAN REFLECTION
    	//
     //Part 1: Diffusion Coefficient
-    vec3 lightVec = normalize(light.center.xyz - rayDirection.xyz);
+    vec3 lightVec = shortcutNormalize(light.center.xyz - rayDirection.xyz);
 	float diffCoef = max(0.0, dot(normal, lightVec));
     
     //
     //Part 2: Attenuation
     //source: The GLSL SuperBible (https://f.usemind.org/files/b/1/UseMind.ORG_comprehensive-tutorial-and-reference_2015__.pdf)
     float distance = length(rayDirection.xyz - lightVec);
-    float attenuation = 6.0 / (distance * distance + 0.0);
+    float attenuation = 6.0 / (square(distance) + 0.0);
     
     //
     //Part 3: Intensity of Diffusion
-    vec4 diffIntensity = vec4(diffCoef*color*light.color) * attenuation;
+    vec4 diffIntensity = diffCoef*color*light.color * attenuation;
     
     //
     //BLINN-PHONG REFLECTANCE
     //
-    vec3 rayView = normalize(rayOrigin.xyz - rayDirection.xyz);
+    vec3 rayView = shortcutNormalize(rayOrigin.xyz - rayDirection.xyz);
     //
-    vec3 halfway = normalize(lightVec + rayView);
+    vec3 halfway = shortcutNormalize(lightVec + rayView);
     float spCoeffPlus = pow(max(0.0, dot(normal, halfway)), 256.0);
     
     //
     //SHINY NEW COLOR OWO (disregard that, it's ecstaticness)
     //
-    vec4 shinyNewColor = (diffIntensity * color + spCoeffPlus * vec4(0.2, 0.4, 0.8, 1.0)) * light.color;
-    return shinyNewColor;
+     vec4 shinyNewColor = 0.03 * vec4(0.8, 0.4, 0.2, 1.0) + (diffIntensity * color + spCoeffPlus * vec4(0.2, 0.4, 0.8, 1.0)) * light.color;
+     
     
 }
  
@@ -174,9 +195,11 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
 
         vec3 position = sphere.center.xyz + vec3(dp.x, dp.y, sqrt(dp.z));
         
-        vec3 normal = (position - sphere.center.xyz) / sphere.radius; 
-	//vec3 normal = normalize(position - sphere.center.xyz); //old function
         
+	//vec3 normal = normalize(position - sphere.center.xyz); //old function
+        //vec3 normal = (position - sphere.center.xyz) / sphere.radius; //old func #2
+	vec3 normal = vec3(dp.x, dp.y, sqrt(dp.z)) / sphere.radius; //function taught during Tuesday's Class by Daniel Buckstein
+
         vec4 color = vec4(normal * 0.5 + 0.5, 1.0);
 
 	vec4 referenceColor = lambertAndBlinn(lightOne, rayDirection, rayOrigin, normal, color, 64.0);
