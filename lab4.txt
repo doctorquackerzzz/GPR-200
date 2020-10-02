@@ -104,7 +104,7 @@ float lenSq(vec2 x)
 	return dot(x,x);
 }
 
-
+ 
 
 // calcColor: calculate the color of a pixel given a ray
 //    rayDirection: input ray direction
@@ -147,10 +147,18 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
 	float diffCoef = max(0.0, dot(normal, lightVec));
     
     float distance = length(rayDirection.xyz - lightVec);
-    float attenuation = 4.0 / (distance * distance + 0.0);
+    float attenuation = 6.0 / (distance * distance + 0.0);
        
     vec4 diffIntensity = vec4(diffCoef*color*light.color) * attenuation;
-	return vec4(diffIntensity);
+	return vec4(diffIntensity * color);
+   	
+        
+   	vec3 rayView = normalize(rayOrigin.xyz - rayDirection.xyz);
+    vec3 mirrorImage = reflect(-lightVec, normal);
+    float spCoeffEXP = pow(max(0.0, dot(rayView, mirrorImage)), 256.0);
+        
+    vec4 shinyColor = 0.1*vec4(0.8, 0.4, 0.2, 1.0) + (diffCoef * color + spCoeffEXP * vec4(0.2, 0.4, 0.8, 1.0)) * light.color;
+    return shinyColor;
     }
 	// BACKGROUND
 	const vec3 warm = vec3(0.8, 0.4, 0.2), cool = vec3(0.2, 0.4, 0.8);
