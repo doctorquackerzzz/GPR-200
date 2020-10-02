@@ -64,12 +64,12 @@ void calcRay(out vec4 rayDirection, out vec4 rayOrigin,
 struct lights
 {
 	vec4 center;
-	vec4 color,
+	vec4 color;
 	float intensity;
 };
-void initLights(out lights light, in vec4 center, in vec4 color, in float intensity)
+void initLights(out lights light, in vec3 center, in vec4 color, in float intensity)
 {
-	light.center = asPoint(center);
+    light.center = asPoint(center);
 	light.color = color;
 	light.intensity = intensity;
 }
@@ -104,6 +104,8 @@ float lenSq(vec2 x)
 	return dot(x,x);
 }
 
+
+
 // calcColor: calculate the color of a pixel given a ray
 //    rayDirection: input ray direction
 //    rayOrigin:    input ray origin
@@ -119,7 +121,7 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     
     //LIGHTS
     lights light;
-    initLight(light, vec3(777.0, 444.0, -234.0), vec4 (1.0, 1.0, 1.0, 1.0), 1.0);
+    initLights(light, vec3(5000.0, 22300.0, -2500.0), vec4 (1.0, 1.0, 1.0, 1.0), 1.0);
 
     //TEST
     vec3 dp;
@@ -138,12 +140,17 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
         vec3 normal = (position - sphere.center.xyz) / sphere.radius; 
 	//vec3 normal = normalize(position - sphere.center.xyz); //old function
         
-        //return vec4(normal * 0.5 + 0.5, 1.0);
+        vec4 color = vec4(normal * 0.5 + 0.5, 1.0);
 
 	//DIFFUSE COEFFICIENT
 	vec3 lightVec = normalize(light.center.xyz - rayDirection.xyz);
-	float diffCoef = max(0.0, dot(normal, lightVec)l
-	return vec4(diffCoef);
+	float diffCoef = max(0.0, dot(normal, lightVec));
+    
+    float distance = length(rayDirection.xyz - lightVec);
+    float attenuation = 4.0 / (distance * distance + 0.0);
+       
+    vec4 diffIntensity = vec4(diffCoef*color*light.color) * attenuation;
+	return vec4(diffIntensity);
     }
 	// BACKGROUND
 	const vec3 warm = vec3(0.8, 0.4, 0.2), cool = vec3(0.2, 0.4, 0.8);
