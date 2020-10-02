@@ -1,4 +1,6 @@
 // GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
+//
+// OVERALL SOURCE USED TO ASSIST: CLASS MATERIAL AND THE OPEN GL SUPERBIBLE
 
 // asPoint: promote a 3D vector into a 4D vector representing a point (w=1)
 //    point: input 3D vector
@@ -61,25 +63,36 @@ void calcRay(out vec4 rayDirection, out vec4 rayOrigin,
     rayDirection = asOffset(viewport - eyePosition);
 }
 
+// STRUCTS AND INIT FUNCTIONS
+//
+//LIGHT STRUCT
+//
 struct lights
 {
 	vec4 center;
 	vec4 color;
 	float intensity;
 };
+//
+//LIGHT INITIALIZATION FUNCTION
+//
 void initLights(out lights light, in vec3 center, in vec4 color, in float intensity)
 {
     light.center = asPoint(center);
 	light.color = color;
 	light.intensity = intensity;
 }
-
+//
+//SPHERE STRUCT
+//
 struct sSphere
 {
     vec4 center;
     float radius;
 };
-    
+//
+//NON USABLE SPHERE INITIALIZATION (BOOL)
+//    
 /*bool initSphere(sSphere sphere, in vec3 center, in float radius)
 {
     sphere.center = asPoint(center);
@@ -91,70 +104,88 @@ struct sSphere
     sphere.radius = 1.0;
     return false;
 }*/
-
-
+//
+//SPHERE INITIALIZATION
+//
 void initSphere(out sSphere sphere, in vec3 center, in float radius)
 {
     sphere.center = asPoint(center);
     sphere.radius = radius;
 }
-
+//
+//LENGTH SQUARED FUNCTIONS
+//
+//VEC2 LENGTH SQUARED
+//
 float lenSq(vec2 x)
 {
-	return dot(x,x);
+	return dot(x,x); // dot product of two vec2 variables
 }
+//
+//VEC3 LENGTH SQUARED
+//
 float lenSq(vec3 y)
 {
-	return dot(y,y);
+	return dot(y,y); // dot product of two vec3 variables
 }
+//
+//VEC4 LENGTH SQUARED
+//
 float lenSq(vec4 z)
 {
-	return dot(z,z)
+	return dot(z,z); // dot product of two vec4 variables
 }
-
+//
+//OTHER OPTIMIZATION FUNCTIONS
+//
+//SQUARE FUNCTION
+//
 float square(float x)
 {
-	retirm x * x;
+	return x * x; // float times a float is similar to float squared
 }
-
+//
+//NORMALIZE FUNCTION SHORTCUT
+//
 vec3 shortcutNormalize(vec3 temporaryVec)
 {
-	return temporaryVec * (1.0 / length(temporaryVec));
+	return temporaryVec * (1.0 / length(temporaryVec)); // 1 divided by the length of a temporary vec3 parenthesized, times the same temporary vec3
 }
-float power(vec2 powVec)
-{
-	return pow(powVec);
-}
+//
+//THE TYPES OF REFLECTIONS FUNCTIONS
+//
 vec4 lambertAndBlinn(in lights light, in vec4 rayDirection, in vec4 rayOrigin, in vec3 normal, in vec4 color, in float x_max)
 {
     //LAMBERTIAN REFLECTION
-   	//
+    //
     //Part 1: Diffusion Coefficient
-    vec3 lightVec = shortcutNormalize(light.center.xyz - rayDirection.xyz);
-	float diffCoef = max(0.0, dot(normal, lightVec));
+    vec3 lightVec = shortcutNormalize(light.center.xyz - rayDirection.xyz); //light vector is equal to the normalized value of the center of the light minus the direction of the ray
+	float diffCoef = max(0.0, dot(normal, lightVec)); // the diffusion coefficient is equal to the maximum dot product of the normal and the light vector
     
     //
     //Part 2: Attenuation
     //source: The GLSL SuperBible (https://f.usemind.org/files/b/1/UseMind.ORG_comprehensive-tutorial-and-reference_2015__.pdf)
-    float distance = length(rayDirection.xyz - lightVec);
-    float attenuation = 6.0 / (square(distance) + 0.0);
+    //
+    float distance = length(rayDirection.xyz - lightVec); //the distance is equal to the length of ray direction minus the light vector
+    float attenuation = 6.0 / (square(distance) + 0.0); //attenuation is equal to a number divided by the distance squared plus however much you want to move the distance
     
     //
     //Part 3: Intensity of Diffusion
-    vec4 diffIntensity = diffCoef*color*light.color * attenuation;
+    //
+    vec4 diffIntensity = diffCoef*color*light.color * attenuation; //the diffusion intensity is equal to the diffusion coefficient times the natural color, times the light color, times the attenuation
     
     //
     //BLINN-PHONG REFLECTANCE
     //
-    vec3 rayView = shortcutNormalize(rayOrigin.xyz - rayDirection.xyz);
+    vec3 rayView = shortcutNormalize(rayOrigin.xyz - rayDirection.xyz); // the ray's view is equal to the normalized value of the ray's origin minus the ray's direction
     //
-    vec3 halfway = shortcutNormalize(lightVec + rayView);
-    float spCoeffPlus = pow(max(0.0, dot(normal, halfway)), 256.0);
+    vec3 halfway = shortcutNormalize(lightVec + rayView); // the halfway vector is equal to the normalization of the light vector plus the ray view
+    float spCoeffPlus = pow(max(0.0, dot(normal, halfway)), 256.0); // the spatial coefficient for Blinn-Phong is equal to the pow of the maximum dot product of normal and the halfway vector, as well as a uinputted number by the coder
     
     //
     //SHINY NEW COLOR OWO (disregard that, it's ecstaticness)
     //
-     vec4 shinyNewColor = 0.03 * vec4(0.8, 0.4, 0.2, 1.0) + (diffIntensity * color + spCoeffPlus * vec4(0.2, 0.4, 0.8, 1.0)) * light.color;
+     vec4 shinyNewColor = 0.03 * vec4(0.8, 0.4, 0.2, 1.0) + (diffIntensity * color + spCoeffPlus * vec4(0.2, 0.4, 0.8, 1.0)) * light.color; // the color is equal to a new vec4 times a small value plus (the diffusion intensity times global color, plus spatial coefficient times a new vec4 variable) times the light's color
      
     
 }
@@ -170,18 +201,21 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     //return rayDirection;
     
     //SCENE
-    sSphere sphere;
-    initSphere(sphere, vec3(0.0, 0.0, -4.0), 0.5);
+    sSphere sphere; // creation of the sphere
+    initSphere(sphere, vec3(0.0, 0.0, -4.0), 0.5); // initialization of the sphere
     
     //LIGHTS
-    lights lightOne, lightTwo, lightThree, lightFour, lightFive;
-    initLights(lightOne, vec3(43.0, 52.0, 62.0), vec4 (1.0, 1.0, 1.0, 1.0), 3.0);
-	initLights(lightTwo, vec3(34.0, 55.0, 34.0), vec4 (0.3, 0.4, 0.9, 0.0), 10.0);
-	initLights(lightThree, vec3(30.0, 43.0, 30.0), vec4 (0.2, 0.2, 0.2, 0.0), 3.0);
-	initLights(lightFour, vec3(53.0, 5.0, 6.0), vec4 (0.1, 0.2, 0.7, 0.3), 2.0);
-	initLights(lightFive, vec3(583.0, 52.0, 626.0), vec4 (0.5, 0.5, 0.3, 0.3), 3.0);
+    lights lightOne, lightTwo, lightThree, lightFour, lightFive; // creation of the lights
+    initLights(lightOne, vec3(43.0, 52.0, 62.0), vec4 (1.0, 1.0, 1.0, 1.0), 3.0); // initialization of the first light
+	initLights(lightTwo, vec3(34.0, 55.0, 34.0), vec4 (0.3, 0.4, 0.9, 0.0), 10.0); // initialization of the second light
+	initLights(lightThree, vec3(30.0, 43.0, 30.0), vec4 (0.2, 0.2, 0.2, 0.0), 3.0); // initialization of the third light
+	initLights(lightFour, vec3(53.0, 5.0, 6.0), vec4 (0.1, 0.2, 0.7, 0.3), 2.0); // initialization of the fourth light
+	initLights(lightFive, vec3(583.0, 52.0, 626.0), vec4 (0.5, 0.5, 0.3, 0.3), 3.0); // initialization of the fifth light
 
     //TEST
+    //
+    //EVERYTHING UP TO THE VEC3 NORMAL VARIABLE TAUGHT TO US IN TUESDAY'S CLASS BY DANIEL BUCKSTEIN
+    //
     vec3 dp;
     dp.xy = rayDirection.xy - sphere.center.xy;
     float lsq = lenSq(dp.xy),
@@ -199,21 +233,25 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
 	//vec3 normal = normalize(position - sphere.center.xyz); //old function
         //vec3 normal = (position - sphere.center.xyz) / sphere.radius; //old func #2
 	vec3 normal = vec3(dp.x, dp.y, sqrt(dp.z)) / sphere.radius; //function taught during Tuesday's Class by Daniel Buckstein
-
+	
+	//END CLASS MATERIAL. 
+	//
         vec4 color = vec4(normal * 0.5 + 0.5, 1.0);
-
-	vec4 referenceColor = lambertAndBlinn(lightOne, rayDirection, rayOrigin, normal, color, 64.0);
-        referenceColor +=  lambertAndBlinn(lightTwo, rayDirection, rayOrigin, normal, color, 32.0);
-        referenceColor += lambertAndBlinn(lightThree, rayDirection, rayOrigin, normal, color, 128.0);
-        referenceColor += lambertAndBlinn(lightFour, rayDirection, rayOrigin, normal, color, 256.0);
-        referenceColor += lambertAndBlinn(lightThree, rayDirection, rayOrigin, normal, color, 512.0);
-    //vec4 shinyness = 0.1*vec4(0.8, 0.4, 0.2, 1.0) + (diffIntensity * color + spCoeffPlus * vec4(0.2, 0.4, 0.8, 1.0)) * light.color;
-    return 0.1*vec4(0.8, 0.4, 0.2, 1.0) + referenceColor;
+	
+	//COLOR REFERENCES FOR THE TYPES OF LIGHT REFLECTIONS
+	vec4 referenceColor = lambertAndBlinn(lightOne, rayDirection, rayOrigin, normal, color, 64.0); // lightOne's Reference color vec4
+        referenceColor +=  lambertAndBlinn(lightTwo, rayDirection, rayOrigin, normal, color, 32.0); // lightTwo's Reference color vec4
+        referenceColor += lambertAndBlinn(lightThree, rayDirection, rayOrigin, normal, color, 128.0); // lightThree's Reference color vec4
+        referenceColor += lambertAndBlinn(lightFour, rayDirection, rayOrigin, normal, color, 256.0); // lightFour's Reference color vec4
+        referenceColor += lambertAndBlinn(lightFive, rayDirection, rayOrigin, normal, color, 512.0); // lightFive's Reference color vec4
+        return 0.1*vec4(0.8, 0.4, 0.2, 1.0) + referenceColor; // returns a smaller version of a custom vec4 plus the reference color;
     }
 	// BACKGROUND
+	//
+	//GRADIENT DISPLAYMENT
 	const vec3 warm = vec3(0.8, 0.4, 0.2), cool = vec3(0.2, 0.4, 0.8);
-	return vec4(mix(warm, cool, rayDirection.y), 1.0);
-    //return vec4(0.5);
+	return vec4(mix(warm, cool, rayDirection.y), 1.0); //blue and orange background
+    //return vec4(0.5); //gray background
 }
 
 // mainImage: process the current pixel (exactly one call per pixel)
