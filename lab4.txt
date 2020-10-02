@@ -121,7 +121,7 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     
     //LIGHTS
     lights light;
-    initLights(light, vec3(5000.0, 22300.0, -2500.0), vec4 (1.0, 1.0, 1.0, 1.0), 1.0);
+    initLights(light, vec3(500.0, 500.0, 600.0), vec4 (1.0, 1.0, 1.0, 1.0), 3.0);
 
     //TEST
     vec3 dp;
@@ -157,8 +157,12 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     vec3 mirrorImage = reflect(-lightVec, normal);
     float spCoeffEXP = pow(max(0.0, dot(rayView, mirrorImage)), 256.0);
         
-    vec4 shinyColor = 0.1*vec4(0.8, 0.4, 0.2, 1.0) + (diffCoef * color + spCoeffEXP * vec4(0.2, 0.4, 0.8, 1.0)) * light.color;
-    return shinyColor;
+    //vec4 shinyColor = 0.1*vec4(0.8, 0.4, 0.2, 1.0) + (diffCoef * color + spCoeffEXP * vec4(0.2, 0.4, 0.8, 1.0)) * light.color;
+    //return shinyColor;
+    vec3 halfway = normalize(lightVec + rayView);
+    float spCoeffPlus = pow(max(0.0, dot(normal, halfway)), 1024.0);
+    vec4 shinyness = 0.1*vec4(0.8, 0.4, 0.2, 1.0) + (diffCoef * color + spCoeffPlus * vec4(0.2, 0.4, 0.8, 1.0)) * light.color;
+    return shinyness;
     }
 	// BACKGROUND
 	const vec3 warm = vec3(0.8, 0.4, 0.2), cool = vec3(0.2, 0.4, 0.8);
