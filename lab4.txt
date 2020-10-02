@@ -104,6 +104,39 @@ float lenSq(vec2 x)
 	return dot(x,x);
 }
 
+vec4 lambertAndBlinn(in lights light, in vec4 rayDirection, in vec4 rayOrigin, in vec3 normal, in vec4 color, in float x_max)
+{
+    //LAMBERTIAN REFLECTION
+   	//
+    //Part 1: Diffusion Coefficient
+    vec3 lightVec = normalize(light.center.xyz - rayDirection.xyz);
+	float diffCoef = max(0.0, dot(normal, lightVec));
+    
+    //
+    //Part 2: Attenuation
+    //source: The GLSL SuperBible (https://f.usemind.org/files/b/1/UseMind.ORG_comprehensive-tutorial-and-reference_2015__.pdf)
+    float distance = length(rayDirection.xyz - lightVec);
+    float attenuation = 6.0 / (distance * distance + 0.0);
+    
+    //
+    //Part 3: Intensity of Diffusion
+    vec4 diffIntensity = vec4(diffCoef*color*light.color) * attenuation;
+    
+    //
+    //BLINN-PHONG REFLECTANCE
+    //
+    vec3 rayView = normalize(rayOrigin.xyz - rayDirection.xyz);
+    //
+    vec3 halfway = normalize(lightVec + rayView);
+    float spCoeffPlus = pow(max(0.0, dot(normal, halfway)), 256.0);
+    
+    //
+    //SHINY NEW COLOR OWO (disregard that, it's ecstaticness)
+    //
+    vec4 shinyNewColor = (diffIntensity * color + spCoeffPlus * vec4(0.2, 0.4, 0.8, 1.0)) * light.color;
+    return shinyNewColor;
+    
+}
  
 
 // calcColor: calculate the color of a pixel given a ray
@@ -120,8 +153,12 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     initSphere(sphere, vec3(0.0, 0.0, -4.0), 0.5);
     
     //LIGHTS
-    lights light;
-    initLights(light, vec3(500.0, 500.0, 600.0), vec4 (1.0, 1.0, 1.0, 1.0), 3.0);
+    lights lightOne, lightTwo, lightThree, lightFour, lightFive;
+    initLights(lightOne, vec3(43.0, 52.0, 62.0), vec4 (1.0, 1.0, 1.0, 1.0), 3.0);
+	initLights(lightTwo, vec3(34.0, 55.0, 34.0), vec4 (0.3, 0.4, 0.9, 0.0), 10.0);
+	initLights(lightThree, vec3(30.0, 43.0, 30.0), vec4 (0.2, 0.2, 0.2, 0.0), 3.0);
+	initLights(lightFour, vec3(53.0, 5.0, 6.0), vec4 (0.1, 0.2, 0.7, 0.3), 2.0);
+	initLights(lightFive, vec3(583.0, 52.0, 626.0), vec4 (0.5, 0.5, 0.3, 0.3), 3.0);
 
     //TEST
     vec3 dp;
@@ -142,32 +179,18 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
         
         vec4 color = vec4(normal * 0.5 + 0.5, 1.0);
 
-	//DIFFUSE COEFFICIENT
-	vec3 lightVec = normalize(light.center.xyz - rayDirection.xyz);
-	float diffCoef = max(0.0, dot(normal, lightVec));
-    
-    float distance = length(rayDirection.xyz - lightVec);
-    float attenuation = 6.0 / (distance * distance + 0.0);
-       
-    vec4 diffIntensity = vec4(diffCoef*color*light.color) * attenuation;
-	return vec4(diffIntensity * color);
-   	
-        
-   	vec3 rayView = normalize(rayOrigin.xyz - rayDirection.xyz);
-    vec3 mirrorImage = reflect(-lightVec, normal);
-    float spCoeffEXP = pow(max(0.0, dot(rayView, mirrorImage)), 256.0);
-        
-    //vec4 shinyColor = 0.1*vec4(0.8, 0.4, 0.2, 1.0) + (diffCoef * color + spCoeffEXP * vec4(0.2, 0.4, 0.8, 1.0)) * light.color;
-    //return shinyColor;
-    vec3 halfway = normalize(lightVec + rayView);
-    float spCoeffPlus = pow(max(0.0, dot(normal, halfway)), 1024.0);
-    vec4 shinyness = 0.1*vec4(0.8, 0.4, 0.2, 1.0) + (diffCoef * color + spCoeffPlus * vec4(0.2, 0.4, 0.8, 1.0)) * light.color;
-    return shinyness;
+	vec4 referenceColor = lambertAndBlinn(lightOne, rayDirection, rayOrigin, normal, color, 64.0);
+        referenceColor +=  lambertAndBlinn(lightTwo, rayDirection, rayOrigin, normal, color, 32.0);
+        referenceColor += lambertAndBlinn(lightThree, rayDirection, rayOrigin, normal, color, 128.0);
+        referenceColor += lambertAndBlinn(lightFour, rayDirection, rayOrigin, normal, color, 256.0);
+        referenceColor += lambertAndBlinn(lightThree, rayDirection, rayOrigin, normal, color, 512.0);
+    //vec4 shinyness = 0.1*vec4(0.8, 0.4, 0.2, 1.0) + (diffIntensity * color + spCoeffPlus * vec4(0.2, 0.4, 0.8, 1.0)) * light.color;
+    return 0.1*vec4(0.8, 0.4, 0.2, 1.0) + referenceColor;
     }
 	// BACKGROUND
 	const vec3 warm = vec3(0.8, 0.4, 0.2), cool = vec3(0.2, 0.4, 0.8);
-	//return vec4(mix(warm, cool, rayDirection.y), 1.0);
-    return vec4(0.5);
+	return vec4(mix(warm, cool, rayDirection.y), 1.0);
+    //return vec4(0.5);
 }
 
 // mainImage: process the current pixel (exactly one call per pixel)
