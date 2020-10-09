@@ -172,11 +172,22 @@ vec4 crossFadeFunc (in vec2 loc)
 {
     return vec4(mix(texture(iChannel0, loc), texture(iChannel1, loc), abs(sin(iTime / 2.0))));
 }
+
+//NOT MINE :: JUST CONFIGURED TO FIT SHADERTOY PROGRAM
+//Source used https://adrianboeing.blogspot.com/2011/02/ripple-effect-in-webgl.html
+sCoord Ripples(in sCoord loc, in sCoord uv)
+{
+    vec2 cPos = -3.0 + 2.0 * uv;
+    float cLength = length(cPos);
+    vec2 newUV = uv+(cPos/cLength)*cos(cLength*30.0-iTime*10.0) * 0.03;
+    return newUV;
+}
 // calcColor: calculate the color of current pixel
 //	  vp:  input viewport info
 //	  ray: input ray info
 color4 calcColor(in sViewport vp, in sRay ray)
 {
+    vec2 uv = vp.pixelCoord.xy/iResolution.xy;
     // test inputs
     //return color4(ray.direction.xyz == vp.viewportPoint.xyz); // pass
     //return color4(lengthSq(vp.viewportPoint.xy) >= 0.25); // pass
@@ -199,7 +210,9 @@ color4 calcColor(in sViewport vp, in sRay ray)
     //return texture(iChannel0,loc).rrrr; //greyscale
     
     //Uncomment for Cross Fade Effect
-    return crossFadeFunc(loc);
+    //return crossFadeFunc(loc);
+    uv = Ripples(loc, uv);
+    return texture(iChannel0, uv);
     
     //light test
     //return vp.viewportPoint;
