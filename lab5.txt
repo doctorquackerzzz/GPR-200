@@ -1,3 +1,11 @@
+//LAB 5: TEXTURE SHADING
+//Modified by Nico Omenetto
+//
+//Overall Sources used:
+//Lab 4 (Lambertian Reflectance Shading)
+//https://gist.github.com/onedayitwillmake/3288507 (Rotation Axes)
+//https://adrianboeing.blogspot.com/2011/02/ripple-effect-in-webgl.html (Ripple Effect)
+
 // GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
 
 //------------------------------------------------------------
@@ -74,6 +82,26 @@ sScalar square(sScalar sq)
 sScalar distFunction(sPoint a, sPoint b)
 {
     return distance(a,b);
+}
+
+sScalar maximFunction(sScalar a, sPoint b, sPoint c)
+{
+	return max(a, dot(b, c));
+}
+
+sScalar absolute (sScalar a, sScalar b)
+{
+	return abs(sin(a/b));
+}
+
+sScalar atten (sScalar a, sScalar b)
+{
+    //taken from lab 4
+    return 1.0/ (1.0 + a / b + square(a)/square(b));
+}
+sCoord uvFunct(sCoord a, sCoord b, sScalar c, sScalar d)
+{
+    return a+(b/c)*cos(c*30.0-d*10.0) * 0.03; // the new uv of the ripple effect is equal to uv plus the fraction of center position and center length, times cosine of centerlength times spacing between each ripple minus iTime times the ripple frequency, times .03
 }
 //------------------------------------------------------------
 // VIEWPORT INFO
@@ -192,7 +220,7 @@ mat4 rotationZ( in float angle ) {
 //
 vec4 crossFadeFunc (in vec2 loc)
 {
-    return vec4(mix(texture(iChannel0, loc), texture(iChannel1, loc), abs(sin(iTime / 2.0)))); // mix between the first texture, second texture and the absolute value of sine of iTime over 2.0, to variate the time between both textures
+    return vec4(mix(texture(iChannel0, loc), texture(iChannel1, loc), absolute(iTime, 2.0))); // mix between the first texture, second texture and the absolute value of sine of iTime over 2.0, to variate the time between both textures
 }
 
 //NOT MINE :: JUST CONFIGURED TO FIT SHADERTOY PROGRAM
@@ -201,7 +229,7 @@ sCoord Ripples(in sCoord loc, in sCoord uv)
 {
     vec2 cPos = -3.0 + 2.0 * uv; //the position of the ripple is considered to be made by the sum of two positioning variables times the uv function
     float cLength = length(cPos); //the length of the center is equal to the length of position
-    vec2 newUV = uv+(cPos/cLength)*cos(cLength*30.0-iTime*10.0) * 0.03; // the new uv of the ripple effect is equal to uv plus the fraction of center position and center length, times cosine of centerlength times spacing between each ripple minus iTime times the ripple frequency, times .03
+    vec2 newUV = uvFunct(uv, cPos, cLength, iTime); //optimized version of what creates the new UV for the ripple
     return newUV; // return for the ripple effect to take place
 }
 
@@ -237,12 +265,11 @@ vec4 lambertShading (in sCoord loc, in lights lighting, in sampler2D iChannel0)
 	vec4 lightPos = normalize(lighting.center - asPoint(surfPos));
 
         //diffusion coefficient (from lab 4)
-    float diffusionCoeff = max(0.0, dot(asPoint(normal), lightPos));
+    float diffusionCoeff = maximFunction(0.0, asPoint(normal), lightPos);
 
 	//attenuation (from lab 4)
 	float dist = distFunction(asPoint(surfPos), lighting.center);
-	float attenuation = 1.0 / (1.0 + dist / lighting.intensity + square(dist) / square(lighting.intensity));
-
+	float attenuation = atten(dist, lighting.intensity);
 	//returning diffusion Intensity with texture (parts from lab 4)
 	return texture(iChannel0, loc) * diffusionCoeff * lighting.color;
 
@@ -296,12 +323,12 @@ color4 calcColor(in sViewport vp, in sRay ray)
     //
     //vec3 cubeLoc = ray.direction.xyz;
     
-    //return texture(iChannel1, cubeLoc);
+    //return texture(iChannel2, cubeLoc);
 
     //FUNCTION OUTPUTS (Uncomment for displayment)
 
     //CROSSFADE EFFECT
-    //return crossFadeFunc(loc);
+    return crossFadeFunc(loc);
     
     //RIPPLE EFFECT
     //uv = Ripples(loc, uv);
@@ -340,4 +367,5 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
     fragColor += calcColor(vp, ray);
 }
+
 
