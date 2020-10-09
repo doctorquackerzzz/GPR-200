@@ -168,10 +168,10 @@ void initRayOrtho(out sRay ray,
 
 //------------------------------------------------------------
 // RENDERING FUNCTIONS
-//sCoord wave(in sCoord originalLocation)
-//{
-    
-//}
+vec4 crossFadeFunc (in vec2 loc)
+{
+    return vec4(mix(texture(iChannel0, loc), texture(iChannel1, loc), abs(sin(iTime / 2.0))));
+}
 // calcColor: calculate the color of current pixel
 //	  vp:  input viewport info
 //	  ray: input ray info
@@ -198,6 +198,9 @@ color4 calcColor(in sViewport vp, in sRay ray)
     //return texture(iChannel0,loc); //full rgba
     //return texture(iChannel0,loc).rrrr; //greyscale
     
+    //Uncomment for Cross Fade Effect
+    return crossFadeFunc(loc);
+    
     //light test
     //return vp.viewportPoint;
     //return vec4 (0.0, 0.0, 1.0, 1.0);
@@ -207,7 +210,7 @@ color4 calcColor(in sViewport vp, in sRay ray)
     //
     vec3 cubeLoc = ray.direction.xyz;
     
-    return texture(iChannel1, cubeLoc);
+    //return texture(iChannel1, cubeLoc);
 }
 
 
