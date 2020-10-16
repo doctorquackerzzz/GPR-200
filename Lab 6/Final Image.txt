@@ -10,6 +10,7 @@
 //    fragCoord: input location of current pixel in image (in pixels)
 void mainImage(out color4 fragColor, in sCoord fragCoord)
 {
+    vec4 screen = vec4(1.0, 1.0, 1.0, 1.0);
     // setup
     // test UV for input image
     sCoord uv = fragCoord / iChannelResolution[0].xy;
@@ -20,8 +21,22 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     vec4 original = texture(iChannel0, uv);
     vec4 gaussBlur = texture(iChannel1, uv);
     
-    fragColor = original + gaussBlur;
-    //fragColor += mix(original, gaussBlur,0.5);
-    //fragColor += mix(gaussBlur, original, 0.6);
+    	//original add
+    //fragColor = original + gaussBlur;
+    
+    	//mixes
+    //fragColor += mix(original, gaussBlur, gaussBlur.a);
+    fragColor += mix(gaussBlur, original, original.a);
+    
+    	//screen
+    //fragColor = screen - (screen - original) * (screen - gaussBlur);
+    
+    	//multiplicative
+    //fragColor = (original * gaussBlur) + 0.1;
+    
+    	//subtract
+    //fragColor = (original-gaussBlur);
+    
+    //test output
    // fragColor = texture(iChannel1, uv);
 }
