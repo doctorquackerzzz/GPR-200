@@ -1,6 +1,7 @@
 // GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
 //  -> BUFFER A TAB (scene)
 
+//used https://www.shaderific.com/glsl-functions/ for help with functions
 //------------------------------------------------------------
 // RENDERING FUNCTIONS
 
@@ -40,11 +41,15 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
     initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
     
-    
+    //cubemap Location
     vec3 cubeLoc = ray.direction.xyz;
+    
+    //cubemap rotation matrix animation
     mat2 cubeRotation = mat2(cos(iTime), sin(iTime), -sin(iTime), cos(iTime));
+
+    //cube location in the x and z coordinate is equal to itself times the animation for the cube rotation
     cubeLoc.xz = cubeLoc.xz * cubeRotation;
     
-    
+    //fragment Shader displays the rotating cubemap
     fragColor += texture(iChannel0, cubeLoc);
 }
