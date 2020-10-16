@@ -1,0 +1,33 @@
+// GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
+//  -> IMAGE TAB (final)
+
+//------------------------------------------------------------
+// SHADERTOY MAIN
+
+// mainImage: process the current pixel (exactly one call per pixel)
+//    fragColor: output final color for current pixel
+//    fragCoord: input location of current pixel in image (in pixels)
+void mainImage(out color4 fragColor, in sCoord fragCoord)
+{
+    float invX = 1.0/ iResolution.x;
+    float invY = 1.0/ iResolution.y;
+    
+    
+    // setup
+    // test UV for input image
+    sCoord uv = fragCoord / iChannelResolution[0].xy;
+    float fraction = 1.0/16.0;
+    float sec_Fraction = 1.0/256.0;
+    float weights[3] = float[3](1.0, 2.0, 9.0);
+    float weights2[6] = float[6](1.0, 4.0, 6.0, 16.0, 24.0, 36.0);
+    
+    vec4 firstCol = weights2[0] * texture(iChannel0, vec2(uv.x - 30.0 * invX, uv.y));
+    vec4 secondCol = weights2[1] * texture(iChannel0, vec2(uv.x - invX, uv.y));
+    vec4 thirdCol = weights2[2] * texture(iChannel0, vec2(uv.x + invX, uv.y));
+    vec4 fourthCol = weights2[3] * texture(iChannel0, vec2(uv.x +30.0 * invX, uv.y));
+    fragColor = fraction * (firstCol + secondCol + thirdCol + fourthCol);
+    
+    // TESTING
+    // set iChannel0 to 'Misc/Buffer A' and fetch sample
+    //fragColor = texture(iChannel0, uv);
+}
