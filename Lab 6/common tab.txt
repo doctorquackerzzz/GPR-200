@@ -48,6 +48,30 @@ sVector asVector(in sBasis v)
     return sVector(v, 0.0);
 }
 
+//screen composition vector
+//x: 1.0
+sVector screen(sVector x)
+{
+    return vec4(x);
+}
+
+//the scale in making the gaussian blur matrix to work
+//x: 16.0 for 3x3 matrix; 256.0 for 5x5 matrix
+sScalar fractionScale (sScalar x)
+{
+    return 1.0/x;
+}
+
+//inverse resolution in both x and y
+//x: iResolution
+sScalar invX (sBasis x)
+{
+    return 1.0/x.x;
+}
+sScalar invY (sBasis x)
+{
+    return 1.0/x.y;
+}
 
 // lengthSq: calculate the squared length of a vector type
 //    x: input whose squared length to calculate
@@ -67,6 +91,23 @@ sScalar lengthSq(sBasis x)
 sScalar lengthSq(sVector x)
 {
     return dot(x, x);
+}
+
+//matrix for cube rotation animation
+//x: iTime
+mat2 cubeRotation(sScalar x)
+{
+    return mat2(cos(x), sin(x), -sin(x), cos(x));
+}
+
+//light creation function
+//x: first manipulator in x
+//y: second manipulator in y
+//z: third manipulator in z
+//fragColor: fragColor
+sScalar light(sScalar x, sScalar y, sScalar z, color4 fragColor)
+{
+    return (x * fragColor.x) + (y * fragColor.y) + (z * fragColor.z);
 }
 
 

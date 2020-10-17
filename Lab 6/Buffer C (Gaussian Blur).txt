@@ -11,18 +11,11 @@
 //    fragCoord: input location of current pixel in image (in pixels)
 void mainImage(out color4 fragColor, in sCoord fragCoord)
 {
-    //inverse resolution in both the X and Y
-    float invX = 1.0/ iResolution.x;
-    float invY = 1.0/ iResolution.y;
-    
+
     
     // setup
     // test UV for input image
     sCoord uv = fragCoord / iChannelResolution[0].xy;
-
-    //fraction variable for the 3x3 and 5x5 Gaussian Blur Matrix
-    float fraction = 1.0/16.0;
-    float sec_Fraction = 1.0/256.0;
 
     //kernels for 3x3 and 5x5
     float weights[3] = float[3](1.0, 2.0, 9.0);
@@ -30,18 +23,18 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
 
     //compilation of the columns in the 3x3 matrix 
     /*
-    vec4 colOne = weights[0] * texture(iChannel0, vec2(uv.x - 10.0 * invX, uv.y)); // first column
-    vec4 colTwo = weights[1] * texture(iChannel0, vec2(uv.x, uv.y)); //second column
-    vec4 colThree = weights[2] * texture(iChannel0, vec2(uv.x + 10.0 * invX, uv.y)); //third column
-    fragColor = fraction * (colOne + colTwo + colThree); // compilation */
+    vec4 colOne = weights[0] * texture(iChannel0, vec2(uv.x - 10.0 * invX, uv.y));
+    vec4 colTwo = weights[1] * texture(iChannel0, vec2(uv.x, uv.y));
+    vec4 colThree = weights[2] * texture(iChannel0, vec2(uv.x + 10.0 * invX, uv.y));
+    fragColor = fractionScale(16.0) * (colOne + colTwo + colThree); */
     
     //compilation of the columns in the 5x5 matrix
-    vec4 firstCol = weights2[1] * texture(iChannel0, vec2(uv.x -12.0 * invX, uv.y - 12.0 * invY)); //first column
-    vec4 secondCol = weights2[2] * texture(iChannel0, vec2(uv.x - 6.0 * invX, uv.y - 6.0 * invY)); //second column
-    vec4 thirdCol = weights2[3] * texture(iChannel0, vec2(uv.x, uv.y)); //third column
-    vec4 fourthCol = weights2[4] * texture(iChannel0, vec2(uv.x + 6.0 * invX, uv.y + 6.0 * invY)); //fourth column
-    vec4 fifthCol = weights2[5] * texture(iChannel0, vec2(uv.x +12.0 *invX, uv.y + 12.0 * invY)); //fifth column
-    fragColor = sec_Fraction * (firstCol + secondCol + thirdCol + fourthCol + fifthCol); //compilation
+    vec4 firstCol = weights2[1] * texture(iChannel0, vec2(uv.x -12.0 * invX(iResolution), uv.y - 12.0 * invY(iResolution)));
+    vec4 secondCol = weights2[2] * texture(iChannel0, vec2(uv.x - 6.0 * invX(iResolution), uv.y - 6.0 * invY(iResolution)));
+    vec4 thirdCol = weights2[3] * texture(iChannel0, vec2(uv.x, uv.y));
+    vec4 fourthCol = weights2[4] * texture(iChannel0, vec2(uv.x + 6.0 * invX(iResolution), uv.y + 6.0 * invY(iResolution)));
+    vec4 fifthCol = weights2[5] * texture(iChannel0, vec2(uv.x +12.0 *invX(iResolution), uv.y + 12.0 * invY(iResolution)));
+    fragColor = fractionScale(256.0) * (firstCol + secondCol + thirdCol + fourthCol + fifthCol);
     
     // TESTING
     // set iChannel0 to 'Misc/Buffer A' and fetch sample

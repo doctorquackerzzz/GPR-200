@@ -18,6 +18,5 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     fragColor = texture(iChannel0, uv);
     
     //forest luminance light
-    float light = (0.42 * fragColor.x) + (0.57 * fragColor.y) + (0.666 * fragColor.z);
-    fragColor = fragColor * light;
+    fragColor = fragColor * light(0.42, 0.57, 0.666, fragColor);
 }
