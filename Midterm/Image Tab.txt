@@ -1,0 +1,71 @@
+// GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
+//  -> IMAGE TAB (final)
+
+// used https://www.shaderific.com/glsl-functions/ for help with the mix function
+
+//SOURCES USED:
+//https://www.shadertoy.com/view/4sfBWj
+//https://www.shadertoy.com/view/WtV3zt
+//------------------------------------------------------------
+// SHADERTOY MAIN
+
+// mainImage: process the current pixel (exactly one call per pixel)
+//    fragColor: output final color for current pixel
+//    fragCoord: input location of current pixel in image (in pixels)
+
+
+
+void mainImage(out color4 fragColor, in sCoord fragCoord)
+{
+    // setup
+    // test UV for input image
+    sCoord uv = fragCoord / iChannelResolution[0].xy;
+    
+    // TESTING
+    // set iChannel0 to 'Misc/Buffer A' and fetch sample
+    
+    vec4 original = texture(iChannel0, uv);
+    
+    	//original add
+    //fragColor = original;
+    
+    
+	vec3 layerOne = texture(iChannel1, fragCoord.xy / iResolution.xy).rgb;
+    //fragColor = vec4(c, 1.0);
+    //return;
+    //declare stuff
+    
+    float kernel[arraySize];
+    vec3 finalColor = vec3(0.0);
+
+    //create the 1-D kernel
+    float sigma = SIGMA;
+    float Z = 0.0;
+    for (int j = 0; j <= kernelSize; ++j)
+    {
+        kernel[kernelSize+j] = kernel[kernelSize-j] = normpdf(float(j), sigma);
+    }
+
+    //get the normalization factor (as the gaussian has been clamped)
+    for (int j = 0; j < arraySize; ++j)
+    {
+        Z += kernel[j];
+    }
+
+    //read out the texels
+    for (int i=-kernelSize; i <= kernelSize; ++i)
+    {
+        for (int j=-kernelSize; j <= kernelSize; ++j)
+        {
+            finalColor += kernel[kernelSize+j]*kernel[kernelSize+i]*texture(iChannel2, (fragCoord.xy+vec2(float(i),float(j))) / iResolution.xy).rgb;
+
+        }
+    }
+
+    finalColor /= Z*Z;
+
+    finalColor = layerOne + pow(finalColor, vec3(0.5)) * 0.5;
+
+    fragColor = vec4(finalColor, 1.0) + original;
+    fragColor += texture(iChannel3, uv);
+}

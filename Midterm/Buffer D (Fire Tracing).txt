@@ -1,0 +1,50 @@
+// GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
+//  -> BUFFER D TAB (scene)
+
+//used https://www.shaderific.com/glsl-functions/ for help with functions
+//
+//BUFFER D DESCRIPTION:
+//Fire Tracing Composite
+
+//NOT MY WORK:
+//Source used to reference and manipulate:https://www.shadertoy.com/view/WtV3zt
+//------------------------------------------------------------
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec2 uv = (fragCoord)/iResolution.xy;
+    
+    
+    
+    vec4 northChannel = texture(iChannel0, (fragCoord + vec2(0.0, 1.0))/iResolution.xy);
+    vec4 southChannel = texture(iChannel0, (fragCoord + vec2(0.0, -1.0))/iResolution.xy);
+    vec4 westChannel = texture(iChannel0, (fragCoord + vec2(-1.0, 0.0))/iResolution.xy);
+    vec4 eastChannel = texture(iChannel0, (fragCoord + vec2(1.0, 0.0))/iResolution.xy);
+    
+    if (iMouse.z > 0.0) {
+	    if (round(fragCoord) == round(iMouse.xy)) {
+	        fragColor = vec4(1.0, 0.01, 0.000001, 1.0)*100000.0;
+	        return;
+    	}
+    }
+    
+    float time = 0.4 * iTime;
+    
+    float nr = texture(iChannel1, ((fragCoord + vec2(0.0, 1.0))/iResolution.xy) + 0.2*abs(vec2(cos(time*1.1), sin(time*1.59)))).r;
+    float sr = texture(iChannel1, ((fragCoord + vec2(0.0, -1.0))/iResolution.xy) + 0.2*abs(vec2(cos(time*1.3), sin(time)*1.47))).r;
+    float wr = texture(iChannel1, ((fragCoord + vec2(-1.0, 0.0))/iResolution.xy) + 0.2*abs(vec2(cos(time)*1.23, sin(time*1.43)))).r;
+    float er = texture(iChannel1, ((fragCoord + vec2(1.0, 0.0))/iResolution.xy) + 0.2*abs(vec2(cos(time)*1.37, sin(time*1.41)))).r;
+    
+    nr *= pow(nr, 1.2);
+    sr *= pow(sr, 1.2);
+    wr *= pow(wr, 1.2);
+    er *= pow(er, 1.2);
+    
+    fragColor.rgb = (0.25 * (northChannel*nr + southChannel*sr + westChannel*wr + eastChannel*er)*3.25).rgb;
+    
+    fragColor.r = clamp(fragColor.r, 0.0, 10000.0);
+    fragColor.g = clamp(fragColor.g, 0.0, 1000000000.0);
+    fragColor.b = clamp(fragColor.b, 0.0, 100.0);
+    
+    fragColor.a = 1.0;
+}

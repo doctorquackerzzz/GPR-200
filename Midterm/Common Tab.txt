@@ -1,6 +1,9 @@
 // GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
 //  -> COMMON TAB (shared with all other tabs)
 
+// GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
+//  -> COMMON TAB (shared with all other tabs)
+
 //------------------------------------------------------------
 // TYPE ALIASES & UTILITY FUNCTIONS
 
@@ -31,6 +34,8 @@
 // 	(this is non-spatial so neither a point nor vector)
 #define color4 vec4
 
+
+#define SIGMA 5.0
 
 // asPoint: promote a 3D vector into a 4D vector 
 //	representing a point in space (w=1)
@@ -109,6 +114,20 @@ sScalar light(sScalar x, sScalar y, sScalar z, color4 fragColor)
 {
     return (x * fragColor.x) + (y * fragColor.y) + (z * fragColor.z);
 }
+
+float normpdf(in float x, in float sigma)
+{
+	return 0.39894*exp(-0.5*x*x/(sigma*sigma))/sigma;
+}
+
+const int arraySize = int(SIGMA * 5.0/7.0);
+const int kernelSize = (arraySize-1)/2;
+const mat2 twobyTwo = mat2( 0.8,  0.6, -0.6,  0.8 );
+const mat3 threebyThree = mat3( 0.8,  0.6, 0.0, -0.6,  0.80, 0.0, 0.0, 0.0, 1.0) *
+                mat3( 1.0,  0.0, 0.0, 0.0, -0.60,  0.80, 0.0, 0.8, 0.6) *
+                mat3( 0.8, 0.6, 0.0, -0.6,  0.80, 0.0, 0.0, 0.0, 1.0) *
+                mat3( 1.0,  0.0, 0.0, 0.0, -0.60,  0.80, 0.0, 0.8, 0.6);
+
 
 
 //------------------------------------------------------------

@@ -1,0 +1,58 @@
+// GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
+//  -> BUFFER C TAB (scene)
+
+//used https://www.shaderific.com/glsl-functions/ for help with functions
+//
+//BUFFER C DESCRIPTION:
+//Fire layer copy 
+
+//NOT MY WORK:
+//Source used to reference and manipulate:https://www.shadertoy.com/view/4sfBWj
+//------------------------------------------------------------
+
+
+
+
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec2 uv = fragCoord.xy / iResolution.xy;
+	vec3 c = texture(iChannel0, uv).rgb;
+		
+    //declare stuff
+    arraySize;
+    kernelSize;
+    float kernel[arraySize];
+    vec3 finalColor = vec3(0.0);
+
+    //create the 1-D kernel
+    float sigma = SIGMA;
+    float Z = 0.0;
+    for (int j = 0; j <= kernelSize; ++j)
+    {
+        kernel[kernelSize+j] = kernel[kernelSize-j] = normpdf(float(j), sigma);
+    }
+
+    //get the normalization factor (as the gaussian has been clamped)
+    for (int j = 0; j < arraySize; ++j)
+    {
+        Z += kernel[j];
+    }
+
+    //read out the texels
+    for (int i=-kernelSize; i <= kernelSize; ++i)
+    {
+        for (int j=-kernelSize; j <= kernelSize; ++j)
+        {
+            finalColor += kernel[kernelSize+j]*kernel[kernelSize+i]*texture(iChannel0, (fragCoord.xy+vec2(float(i),float(j))) / iResolution.xy).rgb;
+			//finalColor += 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0.0,1.0,2.0));
+        }
+    }
+
+    finalColor /= Z*Z;
+
+    //finalColor = c + finalColor * 0.3;
+	
+
+    fragColor = vec4(finalColor, 1.0);
+}
