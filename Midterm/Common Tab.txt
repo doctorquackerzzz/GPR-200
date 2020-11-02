@@ -115,18 +115,29 @@ sScalar light(sScalar x, sScalar y, sScalar z, color4 fragColor)
     return (x * fragColor.x) + (y * fragColor.y) + (z * fragColor.z);
 }
 
+//the normal point of defraction calculation, which calculates a value by the exponent of another value by sigma squared divided by sigma
 float normpdf(in float x, in float sigma)
 {
 	return 0.39894*exp(-0.5*x*x/(sigma*sigma))/sigma;
 }
 
+
+//Constant variable declaratives
+
+//arraySize declarative
 const int arraySize = int(SIGMA * 5.0/7.0);
+
+//kernelSize declarative
 const int kernelSize = (arraySize-1)/2;
-const mat2 twobyTwo = mat2( 0.8,  0.6, -0.6,  0.8 );
-const mat3 threebyThree = mat3( 0.8,  0.6, 0.0, -0.6,  0.80, 0.0, 0.0, 0.0, 1.0) *
-                mat3( 1.0,  0.0, 0.0, 0.0, -0.60,  0.80, 0.0, 0.8, 0.6) *
-                mat3( 0.8, 0.6, 0.0, -0.6,  0.80, 0.0, 0.0, 0.0, 1.0) *
-                mat3( 1.0,  0.0, 0.0, 0.0, -0.60,  0.80, 0.0, 0.8, 0.6);
+
+//two by two matrix creation
+const mat2 twobyTwo = mat2( 0.7,  0.5, -0.5,  0.7 );
+
+//three by three matrix creation
+const mat3 threebyThree = mat3( 0.7,  0.5, 0.0, -0.5,  0.70, 0.0, 0.0, 0.0, 1.0) *
+                mat3( 1.0,  0.0, 0.0, 0.0, -0.50,  0.70, 0.0, 0.7, 0.5) *
+                mat3( 0.7, 0.5, 0.0, -0.5,  0.70, 0.0, 0.0, 0.0, 1.0) *
+                mat3( 1.0,  0.0, 0.0, 0.0, -0.50,  0.70, 0.0, 0.7, 0.5);
 
 
 

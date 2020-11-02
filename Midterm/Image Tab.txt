@@ -26,33 +26,35 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     
     vec4 original = texture(iChannel0, uv);
     
-    	//original add
+    //original add
     //fragColor = original;
     
-    
-	vec3 layerOne = texture(iChannel1, fragCoord.xy / iResolution.xy).rgb;
+    //second layer of the flames creation by the buffer
+    vec3 newLayer = texture(iChannel1, fragCoord.xy / iResolution.xy).rgb;
     //fragColor = vec4(c, 1.0);
     //return;
-    //declare stuff
+    //kernel declaration
     
     float kernel[arraySize];
     vec3 finalColor = vec3(0.0);
 
-    //create the 1-D kernel
+    //one dimensional kernel creation
+    //for loop to create the base of the kernel size
     float sigma = SIGMA;
-    float Z = 0.0;
+    float negate = 0.0;
     for (int j = 0; j <= kernelSize; ++j)
     {
         kernel[kernelSize+j] = kernel[kernelSize-j] = normpdf(float(j), sigma);
     }
 
-    //get the normalization factor (as the gaussian has been clamped)
+    //for loop to get the normalization factor
+    //assuming gaussian blur has been clamped already
     for (int j = 0; j < arraySize; ++j)
     {
-        Z += kernel[j];
+        negate += kernel[j];
     }
 
-    //read out the texels
+    //for loop within a for loop to create the next layer of the flame to display out to the image
     for (int i=-kernelSize; i <= kernelSize; ++i)
     {
         for (int j=-kernelSize; j <= kernelSize; ++j)
@@ -62,10 +64,14 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
         }
     }
 
-    finalColor /= Z*Z;
+    finalColor /= negate*negate;
 
-    finalColor = layerOne + pow(finalColor, vec3(0.5)) * 0.5;
+    //first layer addition to the main image
+    finalColor = newLayer + pow(finalColor, vec3(0.5)) * 0.5;
 
+    //flame layer addition to the original rotating cube
     fragColor = vec4(finalColor, 1.0) + original;
+
+    //flame tracing addition to the overall final image
     fragColor += texture(iChannel3, uv);
 }

@@ -17,29 +17,31 @@
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     vec2 uv = fragCoord.xy / iResolution.xy;
-	vec3 c = texture(iChannel0, uv).rgb;
+    vec3 composite = texture(iChannel0, uv).rgb;
 		
-    //declare stuff
+    //kernel declarations
     arraySize;
     kernelSize;
     float kernel[arraySize];
     vec3 finalColor = vec3(0.0);
 
-    //create the 1-D kernel
+    //one dimensional kernal creation
+    //loops through a for loop to create the kernel
     float sigma = SIGMA;
-    float Z = 0.0;
+    float negate = 0.0;
     for (int j = 0; j <= kernelSize; ++j)
     {
         kernel[kernelSize+j] = kernel[kernelSize-j] = normpdf(float(j), sigma);
     }
 
-    //get the normalization factor (as the gaussian has been clamped)
+    //for loop that loops through to get the normalization factor
+    //assuming the gaussian blur has been clamped
     for (int j = 0; j < arraySize; ++j)
     {
-        Z += kernel[j];
+        negate += kernel[j];
     }
 
-    //read out the texels
+    //for loop inside of another for loop that reads out the texture channels to build the first layer of the flames
     for (int i=-kernelSize; i <= kernelSize; ++i)
     {
         for (int j=-kernelSize; j <= kernelSize; ++j)
@@ -49,7 +51,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         }
     }
 
-    finalColor /= Z*Z;
+    finalColor /= negate*negate;
 
     //finalColor = c + finalColor * 0.3;
 	

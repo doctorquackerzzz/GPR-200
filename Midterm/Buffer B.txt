@@ -33,8 +33,9 @@ color4 calcColor(in sViewport vp, in sRay ray)
 //    fragColor: output final color for current pixel
 //    fragCoord: input location of current pixel in image (in pixels)
 
-float time;
+float time; //time variable
 
+//calculations for the floor variable to build the static frames of the flame particles
 float n1f0(float p) {
     return fract(sin(p * 1.7227636) * 8.03e2);
 }
@@ -53,24 +54,24 @@ float n3f(vec3 p) {
 }
 
 float n3(vec3 p) {
-    vec3 b = floor(p);
-    vec3 e = b + vec3(1.0);
+    vec3 truth = floor(p);
+    vec3 fake = truth + vec3(1.0);
     vec3 particleAlignment = smoothstep(vec3(0.0), vec3(1.0), fract(p));
-    float c000 = n3f(b);
-    float c001 = n3f(vec3(b.x, b.y, e.z));
-    float c010 = n3f(vec3(b.x, e.y, b.z));
-    float c011 = n3f(vec3(b.x, e.y, e.z));
-    float c100 = n3f(vec3(e.x, b.y, b.z));
-    float c101 = n3f(vec3(e.x, b.y, e.z));
-    float c110 = n3f(vec3(e.x, e.y, b.z));
-    float c111 = n3f(e);
+    float c000 = n3f(truth);
+    float c001 = n3f(vec3(truth.x, truth.y, fake.z));
+    float c010 = n3f(vec3(truth.x, fake.y, truth.z));
+    float c011 = n3f(vec3(truth.x, fake.y, fake.z));
+    float c100 = n3f(vec3(fake.x, truth.y, truth.z));
+    float c101 = n3f(vec3(fake.x, truth.y, fake.z));
+    float c110 = n3f(vec3(fake.x, fake.y, truth.z));
+    float c111 = n3f(fake);
     vec4 z = mix(vec4(c000, c100, c010, c110), vec4(c001, c101, c011, c111),  particleAlignment.z);
     vec2 yz = mix(z.xy, z.zw, particleAlignment.y);
     return mix(yz.x, yz.y, particleAlignment.x);
     
 }
 
-//the consistency of flame particles in the y direction. The higher each row goes, the more sparratic the particles for the flames go
+//the consistency of flame particles. The higher each row goes, the more sparratic the particles for the flames go
 float flameConsistency( vec3 p )
 {
     float f = 0.0;
@@ -88,6 +89,7 @@ float flameConsistency( vec2 p )
 }
 
 
+//grid creation for the flame particles
 float grid(vec2 p) {
     p = sin(p * 3.1415);
     return smoothstep(-0.9, 0.9, p.x * p.y);
@@ -106,6 +108,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float combustConsistency1 = time * 1.5;
     float combustConsistency2 = time * 0.6;
 
+    //the warping of the flames
+    //calculates two different warpings using the calculations of the combustion consistency and the time
+    //an offset is then calculated by making a vec3 of the change in flame consistency and multiplying the x and y of the offset by a value
     vec3 verticalWarp1 = vec3(p, combustConsistency1);
     verticalWarp1.y *= 2.8;
     vec2 offset1 = vec2(flameConsistency(verticalWarp1), flameConsistency(verticalWarp1 + vec3(10.0, 20.0, 50.0)));
@@ -118,16 +123,18 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     offset2.y *= 0.3;
     offset2.x *= 1.3;
     
+    //the creation of the flame by space, cosistency, and the light, which gives the flame the color it needs
+    //the last steps make the flame the color of orange
     vec2 verticalSpace = (p + offset1 * 1.5 + offset2 * 1.9) * 8.0;
     vec3 verticalConsistency = vec3(verticalSpace, combustSpeed);
     float light;
     light = flameConsistency(verticalConsistency);
     light = smoothstep(0.0, 0.85, light);
     light = max(0.0, (light - pow(uv.y * 0.8, 0.6)) * 1.8);
-    float r = pow(light , 1.5);
-    float g = pow(light , 3.0);
-    float b = pow(light , 6.0);
-    vec3 combo = vec3(r,g,b);
+    float red = pow(light , 1.5);
+    float green = pow(light , 3.0);
+    float blue = pow(light , 6.0);
+    vec3 combo = vec3(red,green,blue);
     //vec3 col = 0.5 + 0.5*cos(iTime+q.xyx+vec3(r,b,g));
     //r = grid(vs);
     
