@@ -97,6 +97,10 @@ sScalar lengthSq(sVector x)
 {
     return dot(x, x);
 }
+sScalar frameCreation(sScalar x, sScalar y, sScalar p)
+{
+    return fract(sin(p * x) * y);
+}
 
 //matrix for cube rotation animation
 //x: iTime
@@ -116,7 +120,7 @@ sScalar light(sScalar x, sScalar y, sScalar z, color4 fragColor)
 }
 
 //the normal point of defraction calculation, which calculates a value by the exponent of another value by sigma squared divided by sigma
-float normpdf(in float x, in float sigma)
+sScalar normpdf(in sScalar x, in sScalar sigma)
 {
 	return 0.39894*exp(-0.5*x*x/(sigma*sigma))/sigma;
 }

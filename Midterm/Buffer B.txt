@@ -36,21 +36,8 @@ color4 calcColor(in sViewport vp, in sRay ray)
 float time; //time variable
 
 //calculations for the floor variable to build the static frames of the flame particles
-float n1f0(float p) {
-    return fract(sin(p * 1.7227636) * 8.03e2);
-}
-
-float n1f1(float p) {
-    return fract(sin(p * 1.42736 + 1.12) * 5.1e2);
-}
-
-float n1f2(float p) {
-    return fract(sin(p * 1.22712 + 12.161) * 5.2e2);
-}
-
-
 float n3f(vec3 p) {
-    return fract(n1f0(p.x) + n1f1(p.y) + n1f2(p.z) + n1f0(p.x * 1.613) + n1f1(p.y * 3.112) + n1f2(p.z * 4.112));
+    return fract(frameCreation(1.7227636, 8.03e2, p.x) + frameCreation(1.42736 + 1.12,5.1e2,p.y) + frameCreation(1.22712 + 12.161, 5.2e2, p.z) + frameCreation(1.7227636 * 1.613, 8.03e2 * 1.613,p.x * 1.613) + frameCreation((1.42736 + 1.12) *3.112, 5.1e2 *3.112, p.y * 3.112) + n1f2((1.22712 + 12.161) * 4.112, 5.2e2 * 4.112, p.z * 4.112));
 }
 
 float n3(vec3 p) {
