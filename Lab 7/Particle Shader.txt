@@ -48,6 +48,7 @@ light initLight(in vec3 center, in vec3 color, in float intensity)
 
 vec3 lambertReflect (in light lighter, in vec3 normal)
 {
+		
 		vec3 lightVec = normalize(lighter.lcenter); //light vector normalization at center
 	
 		float diffCoeff = max(0.0, dot(vNormal, lightVec)); //diffusion coefficient
@@ -100,7 +101,8 @@ void main(){
 	
 		// Initialize at given position, white light, 1.5 intensity
 		lighter[i] = initLight(lightPosition, vec3(1), 1.5);
-		
+
+		//lambertian reflectance		
 		lambertReflect(lighter[i], vNormal);
 		
 		viewVec = normalize(lighter[i].lcenter - vec3(vPosition));
