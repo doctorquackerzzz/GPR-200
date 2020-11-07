@@ -1,5 +1,8 @@
 #version 300 es
 
+//LIGHT INITIALIZATIONS TAKEN FROM LAB 4
+//TEXTURES TAKEN FROM LAB 5 // PROFESSOR BUCKSTEIN'S ANNOUNCEMENT IN CANVAS
+
 // Input attributes
 layout (location = 0) in vec4 aPosition;
 layout (location = 1) in vec3 aNormal;
@@ -42,46 +45,50 @@ light initLight(in vec3 pos, in vec3 color, in float intensity)
 }
 vec3 lambertReflect (in light lighter, in vec3 normal)
 {
-		vec3 lightVec = normalize(lighter.lcenter);
+		vec3 lightVec = normalize(lighter.lcenter); //light vector normalization at center
 	
-		float diffCoeff = max(0.0, dot(vNormal, lightVec));
-		// Calculate attenuation, use tempVec for efficiency
-		vec3 tempVec = lighter.lcenter / lighter.lintensity;
-		vec3 attenuation = 1.0 / (tempVec + tempVec * tempVec);
+		float diffCoeff = max(0.0, dot(vNormal, lightVec)); //diffusion coefficient
+
+		//attenuation
+		vec3 attenuation = 1.0 / (vec3(lighter.lcenter / lighter.lintensity)+ vec3(lighter.lcenter / lighter.lintensity) * vec3(lighter.lcenter / lighter.lintensity));
+		
+		//returns the diffusion intensity which is the product of this
 		return diffCoeff * attenuation;
 }
 
 vec3 reflectLighter(in light lighter, in vec3 normal)
 {
+	//light vector declaration
 	vec3 lightVec = normalize(lighter.lcenter);
-	// Calculate reflected light
+	
+	//reflect function for both the light vector and the vNormal vector
 	vec3 reflectLight = reflect(-lightVec, vNormal);
 	return reflectLight;
 }
 
-float specularHighlight(float specularCoeff)
-{
-	specularCoeff *= specularCoeff;
-	specularCoeff *= specularCoeff;
-	return specularCoeff;
-}
+
 void main()
 {
 	// Variable declarations
 	// Constant to determine number of lights
-	const int LIGHTER = 5;
+	const int LIGHTER = 3;
 	
 	light lighter[LIGHTER];
-
+	
+	//model view matrix and clip space  functions
 	mat4 modelViewMatrix = uViewMatrix * uModelMatrix;
 	vec4 pos_clip = uViewProjMatrix * uModelMatrix * aPosition;	
+	
+	//final color and position vector initialization
 	vec4 finalColor, position;
 	
+	//light position, view vector and normal initialization
 	vec3 lightPosition, viewVec, normal;
 	
+	//specular coefficient initialization
 	float specularCoeff;
 	
-	// Calculate position and normal in object or view space
+	// position in both object space and view space by attributes
 	position = aPosition;
 	//position = modelViewMatrix * aPosition;
 	
@@ -91,38 +98,40 @@ void main()
 	// Main lighting calculation loop
 	for (int i = 0; i < LIGHTER; i++)
 	{
-		// Light positioned at (i + 1, i + 1, 1) in object space
-		lightPosition = vec3(i + 2, i + 2, 1);
+		//object space light position
+		//lightPosition = vec3(i, i, 1);
 		
-		// Light positioned at (i + 1, i + 1, 1) in view space
-		//lightPosition = mat3(modelViewMatrix) * vec3(i + 1, i + 1, 1);
+		// view space light position
+		lightPosition = mat3(modelViewMatrix) * vec3(i, i, 1);
 	
 		// Initialize at given position, white light, 1.5 intensity
 		lighter[i] = initLight(lightPosition, vec3(1), 1.5);
 		
 		lambertReflect(lighter[i], vNormal);
 		
+		//view vector calculation
 		viewVec = normalize(lighter[i].lcenter - vec3(vPosition));
 		
-		// Calculate specular coefficient
+		reflectLighter(lighter[i],vNormal);
+		// spec coefficient calculation
 		specularCoeff = dot(reflectLighter(lighter[i], vNormal), viewVec) * 0.5 + 0.5;
-
-		
+		specularCoeff *= specularCoeff;
+		specularCoeff *= specularCoeff;
 
 		// Calculate final color for this light
 		finalColor += texture(uTexture, aTexCoord) * 
-			      vec4(lambertReflect(lighter[i], vNormal) + specularHighlight(specularCoeff) * vec3(0) * lighter[i].lcolor, 1);
+			      vec4(lambertReflect(lighter[i], vNormal) + specularCoeff * vec3(0) * lighter[i].lcolor, 1);
 	}
 	
 	// Factor in global light
 	finalColor += 0.15 * vec4(1);
 	
-	// Set varyings
+	// VARYING
 	vColor = finalColor;
 	vPosition = position;
 	vNormal = normal;
 	vTexCoord = aTexCoord;
 		
-	// Set position in clip space
+	//Position set in clip space
 	gl_Position = pos_clip;
 }

@@ -4,8 +4,11 @@
 precision highp float;
 #endif
 
+//LIGHT INITIALIZATIONS TAKEN FROM LAB 4
+//TEXTURES TAKEN FROM LAB 5 // PROFESSOR BUCKSTEIN'S ANNOUNCEMENT IN CANVAS
+
 // Output attribute
-layout (location = 0) out vec4 rtColor;
+layout (location = 0) out vec4 rtFragColor;
 
 // Uniforms
 uniform mat4 uViewMatrix, uModelMatrix;
@@ -45,54 +48,55 @@ light initLight(in vec3 center, in vec3 color, in float intensity)
 
 vec3 lambertReflect (in light lighter, in vec3 normal)
 {
-		vec3 lightVec = normalize(lighter.lcenter);
+		vec3 lightVec = normalize(lighter.lcenter); //light vector normalization at center
 	
-		float diffCoeff = max(0.0, dot(vNormal, lightVec));
-		// Calculate attenuation, use tempVec for efficiency
-		vec3 tempVec = lighter.lcenter / lighter.lintensity;
-		vec3 attenuation = 1.0 / (tempVec + tempVec * tempVec);
+		float diffCoeff = max(0.0, dot(vNormal, lightVec)); //diffusion coefficient
+
+		//attenuation
+		vec3 attenuation = 1.0 / (vec3(lighter.lcenter / lighter.lintensity)+ vec3(lighter.lcenter / lighter.lintensity) * vec3(lighter.lcenter / lighter.lintensity));
+		
+		//returns the diffusion intensity which is the product of this
 		return diffCoeff * attenuation;
 }
 
 vec3 reflectLighter(in light lighter, in vec3 normal)
 {
+	//light vector declaration
 	vec3 lightVec = normalize(lighter.lcenter);
-	// Calculate reflected light
+	
+	//reflect function for both the light vector and the vNormal vector
 	vec3 reflectLight = reflect(-lightVec, vNormal);
 	return reflectLight;
-}
-
-float specularHighlight(float specularCoeff)
-{
-	specularCoeff *= specularCoeff;
-	specularCoeff *= specularCoeff;
-	return specularCoeff;
 }
 
 void main(){
 	
 	// Variable declarations
 	// Constant to determine number of lights
-	const int NUM_LIGHTS = 3;
+	const int LIGHTER = 3;
 	
-	light lighter[NUM_LIGHTS];
+	light lighter[LIGHTER];
 
+	//model view matrix
 	mat4 modelViewMatrix = uViewMatrix * uModelMatrix;
-		
+	
+	//final color vec4 initialization	
 	vec4 finalColor;
 	
+	//position of light and view vector initialization
 	vec3 lightPosition, viewVec;
 	
+	//specular coefficient initialization
 	float specularCoeff;
 	
 	// light for loop
-	for (int i = 0; i < NUM_LIGHTS; i++)
+	for (int i = 0; i < LIGHTER; i++)
 	{
-		// Light positioned at (i + 1, i + 1, 1) in object space
-		lightPosition = vec3(i + 2, i + 2, 1);
+		//object space light position
+		//lightPosition = vec3(i, i, 1);
 		
-		// Light positioned at (i + 1, i + 1, 1) in view space
-		//lightPosition = mat3(modelViewMatrix) * vec3(i + 1, i + 1, 1);
+		// view space light position
+		lightPosition = mat3(modelViewMatrix) * vec3(i, i, 1);
 	
 		// Initialize at given position, white light, 1.5 intensity
 		lighter[i] = initLight(lightPosition, vec3(1), 1.5);
@@ -100,21 +104,22 @@ void main(){
 		lambertReflect(lighter[i], vNormal);
 		
 		viewVec = normalize(lighter[i].lcenter - vec3(vPosition));
+		reflectLighter(lighter[i],vNormal);
 		
-		// Calculate specular coefficient
+		//calculation of the specular coefficient
 		specularCoeff = dot(reflectLighter(lighter[i], vNormal), viewVec) * 0.5 + 0.5;
+		specularCoeff *= specularCoeff;
+		specularCoeff *= specularCoeff;
 
-		
-
-		// Calculate final color for this light
+		// Calculation of the final light color
 		finalColor += texture(uTexture, vTexCoord) * 
-			      vec4(lambertReflect(lighter[i], vNormal) + specularHighlight(specularCoeff) * vec3(0) * lighter[i].lcolor, 1);
+			      vec4(lambertReflect(lighter[i], vNormal) + specularCoeff * vec3(0) * lighter[i].lcolor, 1);
 	}
 	
-	// Factor in global light
+	// additive for global light
 	finalColor += 0.15 * vec4(1);
 	
 	// Output color from vertex or fragment shader
-	rtColor = finalColor;
-	rtColor = vColor;
+	rtFragColor = finalColor;
+	rtFragColor = vColor;
 }
